@@ -1,0 +1,26 @@
+Kiloblaster - Copyright 1992-1994 Allen Pilgrim
+This port of Kiloblaster is Copyright 2012 Adam Nielsen <malvineous@shikadi.net>
+The included DOSBox OPL synth is Copyright 2002-2010 The DOSBox Team
+
+All code is covered under the GNU GPL license.  Unless otherwise stated in a
+given file, it is version 3 of the GPL.
+
+You will need SDL and libgamemusic available to build this port.
+
+Build instructions:
+
+ ./autogen.sh        # Only needed if building git version
+ ./configure && make
+
+This will produce ./src/kfile1 which should be placed in the same directory
+as the Kiloblaster data files (just like the DOS .EXE file.)  If you don't have the
+data files handy, all three episodes have been released as freeware and can be
+downloaded from http://www.classicdosgames.com/game/Kiloblaster.html
+
+If you encounter any problems with this port or need help, please ask on the
+RGB Classic Games forum at http://www.classicdosgames.com/forum/  You can also
+get help here if you are stuck somewhere in the game!
+
+Known issues:
+
+ - Will only run on little-endian CPUs due to endian-specific file handling.
