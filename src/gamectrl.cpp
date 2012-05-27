@@ -1,62 +1,61 @@
 // GAMECTRL.C
 
-#include <dos.h>;
-#include <fcntl.h>;
-#include <ctype.h>;
-#include <string.h>;
-#include <mem.h>;
-#include <conio.h>;
-#include <stdlib.h>;
-#include <io.h>;
-#include "\develop\kilo2\include\keyboard.h";
+#include <fcntl.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+#include "include/keyboard.h"
+#include "port.h"
 
-extern int gamecount;
-extern int debug,swrite;
+extern int16_t gamecount;
+extern int16_t debug,swrite;
 
-long systime=0;
-extern char *myclock;
-extern long longclock;
+int32_t systime=0;
+extern int32_t longclock;
 
-int dx1, dy1, fire1, fire2, fire1off, fire2off;
-int joyflag;
-int key;
-int dx1hold, dy1hold, flow1;
-int dx1old, dy1old;
-int joyxsense, joyysense;
+int16_t dx1, dy1, fire1, fire2, fire1off, fire2off;
+int16_t joyflag;
+int16_t key;
+int16_t dx1hold, dy1hold, flow1;
+int16_t dx1old, dy1old;
+int16_t joyxsense, joyysense;
 
-int macplay, macrecord, macabort, macaborted, mactime;
+int16_t macplay, macrecord, macabort, macaborted, mactime;
 char *macptr=NULL;
 char macfname[32];
-unsigned int macofs,maclen;
+uint16_t macofs,maclen;
 
 void recmac (void);
 void getmac (void);
 
 // local
 
-int joyxl, joyxc, joyxr, joyyu, joyyc, joyyd;
+int16_t joyxl, joyxc, joyxr, joyyu, joyyc, joyyd;
 char keybuf [256];
 
-int buttona1 (void) {
+int16_t buttona1 (void) {
 	return ((inportb(0x201) & 0x10)==0);
 	};
 
-int buttona2 (void) {
+int16_t buttona2 (void) {
 	return ((inportb(0x201) & 0x20)==0);
 	};
 
 void readspeed (void) {
-	int oldclock;
+/*
+	int16_t oldclock;
 	systime=0;
 	oldclock=*myclock;
 	do {} while (*myclock==oldclock);
 	do {systime++;} while ((*myclock-oldclock)<5);
 // Now 5 intervals have passed
 	systime/=4L;
+*/
+	systime = 4096; // dummy
 	};
 
-void readjoy (int *x, int *y) {				// may want to delay...
-	int n;
+void readjoy (int16_t *x, int16_t *y) {				// may want to delay...
+	int16_t n;
 
 	disable();
 	*x=0; *y=0; n=0;
@@ -71,9 +70,9 @@ void readjoy (int *x, int *y) {				// may want to delay...
 		};
 	};
 
-int caldir (char *s, int *jx, int *jy) {
-	int result=0;
-	int key=0;
+int16_t caldir (char *s, int16_t *jx, int16_t *jy) {
+	int16_t result=0;
+	int16_t key=0;
 	cputs (s);
 	do {
 		readjoy (jx,jy);
@@ -91,8 +90,8 @@ int caldir (char *s, int *jx, int *jy) {
 	return (result);
 	};
 
-int joypresent (void) {
-	int x,y;
+int16_t joypresent (void) {
+	int16_t x,y;
 	readjoy (&x,&y);
 	if ((x>0)&&(y>0)) {
 		joyxsense=x; joyysense=y;
@@ -100,8 +99,8 @@ int joypresent (void) {
 		}; return (0);
 	};
 
-int calibratejoy (void) {
-	int key;
+int16_t calibratejoy (void) {
+	int16_t key;
 	redo:
 	joyflag=0;
 	cputs ("\r\nJoystick calibration:  Press ESCAPE to abort.\r\n");
@@ -122,8 +121,8 @@ int calibratejoy (void) {
 		}; return (0);
 	};
 
-void checkctrl (int pollflag) {
-	int x1, y1, xs, ys;
+void checkctrl (int16_t pollflag) {
+	int16_t x1, y1, xs, ys;
 
 	if (macplay) {
 		getmac(); return;
@@ -133,10 +132,49 @@ void checkctrl (int pollflag) {
 	fire1=0; flow1=0;
 	reloop:
 	key=0;
-	if (k_pressed()) {
-		key=k_read();
-		if ((key==0)|(key==1)|(key==2)) key=k_read();
-		};
+	//if (k_pressed()) {
+	SDL_Event event;
+getNextEvent:
+	if (SDL_PollEvent(&event)) {
+		//key=k_read();
+		//if ((key==0)|(key==1)|(key==2)) key=k_read();
+		int newkey, newscan = 0;
+		switch (event.type) {
+			case SDL_KEYUP:
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+					case SDLK_LEFT:     newkey = k_left;    newscan = scan_cursorleft; break;
+					case SDLK_RIGHT:    newkey = k_right;   newscan = scan_cursorright; break;
+					case SDLK_UP:       newkey = k_up;      newscan = scan_cursorup; break;
+					case SDLK_DOWN:     newkey = k_down;    newscan = scan_cursordown; break;
+					case SDLK_PAGEUP:   newkey = k_pgdown;  break;
+					case SDLK_PAGEDOWN: newkey = k_pgup;    break;
+					case SDLK_F1:       newkey = k_f1;      newscan = scan_f1; break;
+					case SDLK_F7:       newkey = k_f7;      break;
+					case SDLK_SPACE:    newkey = ' ';       newscan = scan_space; break;
+					case SDLK_ESCAPE:   newkey = escape;    newscan = scan_esc; break;
+					case SDLK_RSHIFT:   newscan = scan_rshift; break;
+					case SDLK_LSHIFT:   newscan = scan_lshift; break;
+					case SDLK_RCTRL:
+					case SDLK_LCTRL:    newscan = scan_ctrl; break;
+					case SDLK_RALT:
+					case SDLK_LALT:     newscan = scan_alt; break;
+					default: newkey = event.key.keysym.sym; break;
+				}
+				break;
+			default:
+				goto getNextEvent;
+		}
+		switch (event.type) {
+			case SDL_KEYUP:
+				keydown[0][newscan] = 0;
+				break;
+			case SDL_KEYDOWN:
+				keydown[0][newscan] = 1;
+				key = newkey;
+				break;
+		}
+	};
 	if (key!=0) {
 		switch (key) {
 			case k_up:
@@ -184,10 +222,10 @@ void checkctrl (int pollflag) {
 	if (macrecord) recmac();
 	};
 
-void checkctrl0 (int pollflag) {
-	static int oldclock=0;
-	do {} while (oldclock==*myclock);
-	oldclock=*myclock;
+void checkctrl0 (int16_t pollflag) {
+	static int16_t oldclock=0;
+	do {} while (oldclock==getclock());
+	oldclock=getclock();
 	checkctrl (pollflag);
 	};
 
@@ -195,8 +233,8 @@ void sensectrlmode (void) {
 	joyflag=joypresent();
 	};
 
-int gc_config (void) {
-	int key=' ';
+int16_t gc_config (void) {
+	int16_t key=' ';
 	if (joypresent()) {
 		cputs ("\r\nGame controller:  K)eyboard,  J)oystick?  ");
 		do {
@@ -227,7 +265,7 @@ void stopmac (void) {
 	};
 
 void playmac (char *fname) {
-	int machand;
+	int16_t machand;
 	stopmac();
 	macaborted=0;
 	machand=_open(fname,O_BINARY);
@@ -258,7 +296,7 @@ void recordmac (char *fname) {
 	};
 
 void macrecend (void) {
-	int machand;
+	int16_t machand;
 
 	if (!macrecord) return;
 	machand=_creat (macfname,0);
@@ -270,8 +308,8 @@ void macrecend (void) {
 	};
 
 void recmac (void) {							// Record a key event
-	static int curdx1=0, curdy1=0, curfire1=0, curfire2=0, oldclock=0;
-	int dt;
+	static int16_t curdx1=0, curdy1=0, curfire1=0, curfire2=0, oldclock=0;
+	int16_t dt;
 	char bits;
 
 	if (key=='[') {mactime=0; key=0;}
@@ -304,8 +342,8 @@ void recmac (void) {							// Record a key event
 	};
 
 void getmac (void) {
-	static int oldclock, nextdt;
-	int tempkey;
+	static int16_t oldclock, nextdt;
+	int16_t tempkey;
 	char bits;
 
 	if (k_pressed()) {
@@ -313,6 +351,7 @@ void getmac (void) {
 		if ((macabort==0)||((macabort==1)&&(tempkey==27))) {
 			stopmac();
 			macaborted=1;
+			return; // PORT: Avoid null pointer when assigning 'bits' below
 			};
 		};
 	key=0;
@@ -323,14 +362,14 @@ void getmac (void) {
 		};
 	if ((gamecount-oldclock)>=(nextdt)) {
 		bits=*(macptr+macofs++);
-		if (bits&1) dx1=(int) (char) *(macptr+macofs++);
-		if (bits&2) dy1=(int) (char) *(macptr+macofs++);
-		if (bits&4) fire1=(int) (char) *(macptr+macofs++);
-		if (bits&8) fire2=(int) (char) *(macptr+macofs++);
+		if (bits&1) dx1=(int16_t) (char) *(macptr+macofs++);
+		if (bits&2) dy1=(int16_t) (char) *(macptr+macofs++);
+		if (bits&4) fire1=(int16_t) (char) *(macptr+macofs++);
+		if (bits&8) fire2=(int16_t) (char) *(macptr+macofs++);
 		if (bits&16) key=(char) *(macptr+macofs++);
 		nextdt=*(macptr+macofs++);
 		if (nextdt<0) {
-			nextdt=(nextdt&127)+(((int)(char) *(macptr+macofs++))<<7);
+			nextdt=(nextdt&127)+(((int16_t)(char) *(macptr+macofs++))<<7);
 			};
 		};
 	if (macofs>=maclen) stopmac();

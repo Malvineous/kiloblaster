@@ -5,14 +5,14 @@
 // Written by Allen W. Pilgrim
 
 #include <stdlib.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\2blaster.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/2blaster.h"
 
 void init_info(void) {
-	int c;
+	int16_t c;
 	for (c=0; c < b_maxbkgnd; c++) {
 		info [c].sh    = 0x4400;		// blank shape
 		info [c].na    = "";		// untitled

@@ -7,23 +7,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <conio.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\uncrunch.h"
-#include "\develop\kilo2\include\music.h"
-#include "\develop\kilo2\include\2blaster.h"
-#include "\develop\kilo2\include\begin.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/uncrunch.h"
+#include "include/music.h"
+#include "include/2blaster.h"
+#include "include/begin.h"
 
-int first_e4 = 1;
-int first_e6 = 1;
-int first_e8 = 1;
-int first_ea = 1;
-int first_eb = 1;
-int first_ei = 1;
-int level_flg;
+int16_t first_e4 = 1;
+int16_t first_e6 = 1;
+int16_t first_e8 = 1;
+int16_t first_ea = 1;
+int16_t first_eb = 1;
+int16_t first_ei = 1;
+int16_t level_flg;
 
 char cfgfname[] = "config.kb1";
 char gamename[] = "kb1_save";
@@ -32,12 +31,12 @@ char shapename[] = "shapes.kb1";
 char ext[] = ".kb1";
 char demolvl[3]={1,7,11};
 char *demoname[3]={"demo1.kb1","demo2.kb1","demo3.kb1"};
-int demonum;
+int16_t demonum;
 char k_msg[]="Epic MegaGames presents . . . Kiloblaster!";
 char k_msg2[]="Kiloblaster: Death of a Starship";
 wintype msg_win, menuwin, waitwin;
 
-int b_len = K_BEGIN_LENGTH;
+int16_t b_len = K_BEGIN_LENGTH;
 extern unsigned char K_BEGIN[];
 
 const char *rnd_msg[10]={
@@ -103,14 +102,14 @@ char *song1[32]={
 	};
 
 void init_objinfo (void) {		// initialize object info array
-	int c;
+	int16_t c;
 	for (c = 0; c < maxobjkinds; c++) {
 		objinfo [c].na    = "";
 		objinfo [c].xl    = 0;
 		objinfo [c].yl    = 0;
 		objinfo [c].msg   = msg_killme;
 		objinfo [c].flags = 0;
-		objinfo [c].class = 0;
+		objinfo [c].class_ = 0;
 		};
 
 		objinfo [obj_player].na      = "PLAYER";
@@ -118,396 +117,396 @@ void init_objinfo (void) {		// initialize object info array
 		objinfo [obj_player].yl      = 18;
 		objinfo [obj_player].msg     = msg_player;
 		objinfo [obj_player].flags   = 0;
-		objinfo [obj_player].class   = class_player;
+		objinfo [obj_player].class_   = class_player;
 
 		objinfo [obj_killme].na      = "KILLME";
 		objinfo [obj_killme].xl      = 0;
 		objinfo [obj_killme].yl      = 0;
 		objinfo [obj_killme].msg     = msg_killme;
 		objinfo [obj_killme].flags   = 1;
-		objinfo [obj_killme].class   = 0;
+		objinfo [obj_killme].class_   = 0;
 
 		objinfo [obj_bullet].na      = "BULLET";
 		objinfo [obj_bullet].xl      = 2;
 		objinfo [obj_bullet].yl      = 4;
 		objinfo [obj_bullet].msg     = msg_bullet;
 		objinfo [obj_bullet].flags   = 0;
-		objinfo [obj_bullet].class   = class_weapon1;
+		objinfo [obj_bullet].class_   = class_weapon1;
 
 		objinfo [obj_platinum].na    = "PLATINUM";
 		objinfo [obj_platinum].xl    = 6;
 		objinfo [obj_platinum].yl    = 10;
 		objinfo [obj_platinum].msg   = msg_platinum;
 		objinfo [obj_platinum].flags = 0;
-		objinfo [obj_platinum].class = class_weapon1;
+		objinfo [obj_platinum].class_ = class_weapon1;
 
 		objinfo [obj_bomb].na        = "BOMB";
 		objinfo [obj_bomb].xl        = 6;
 		objinfo [obj_bomb].yl        = 8;
 		objinfo [obj_bomb].msg       = msg_bomb;
 		objinfo [obj_bomb].flags     = 0;
-		objinfo [obj_bomb].class     = class_weapon2;
+		objinfo [obj_bomb].class_     = class_weapon2;
 
 		objinfo [obj_missile].na     = "MISSILE";
 		objinfo [obj_missile].xl     = 10;
 		objinfo [obj_missile].yl     = 20;
 		objinfo [obj_missile].msg    = msg_missile;
 		objinfo [obj_missile].flags  = 0;
-		objinfo [obj_missile].class  = class_weapon2;
+		objinfo [obj_missile].class_  = class_weapon2;
 
 		objinfo [obj_bullet2].na     = "BULLET2";
 		objinfo [obj_bullet2].xl     = 6;
 		objinfo [obj_bullet2].yl     = 4;
 		objinfo [obj_bullet2].msg    = msg_bullet2;
 		objinfo [obj_bullet2].flags  = 0;
-		objinfo [obj_bullet2].class  = 0;
+		objinfo [obj_bullet2].class_  = 0;
 
 		objinfo [obj_spinner].na     = "SPINNER";
 		objinfo [obj_spinner].xl     = 8;
 		objinfo [obj_spinner].yl     = 8;
 		objinfo [obj_spinner].msg    = msg_spinner;
 		objinfo [obj_spinner].flags  = 0;
-		objinfo [obj_spinner].class  = 0;
+		objinfo [obj_spinner].class_  = 0;
 
 		objinfo [obj_enemy1].na      = "ENEMY1";	// Colonial Warrior
 		objinfo [obj_enemy1].xl      = 12;
 		objinfo [obj_enemy1].yl      = 8;
 		objinfo [obj_enemy1].msg     = msg_enemy1;
 		objinfo [obj_enemy1].flags   = 0;
-		objinfo [obj_enemy1].class   = class_enemy;
+		objinfo [obj_enemy1].class_   = class_enemy;
 
 		objinfo [obj_enemy2].na      = "ENEMY2";	// Small Orzot Fighter
 		objinfo [obj_enemy2].xl      = 14;
 		objinfo [obj_enemy2].yl      = 12;
 		objinfo [obj_enemy2].msg     = msg_enemy2;
 		objinfo [obj_enemy2].flags   = 0;
-		objinfo [obj_enemy2].class   = class_enemy;
+		objinfo [obj_enemy2].class_   = class_enemy;
 
 		objinfo [obj_enemy3].na      = "ENEMY3";	// Omikron Invader
 		objinfo [obj_enemy3].xl      = 16;
 		objinfo [obj_enemy3].yl      = 24;
 		objinfo [obj_enemy3].msg     = msg_enemy3;
 		objinfo [obj_enemy3].flags   = 0;
-		objinfo [obj_enemy3].class   = class_enemy;
+		objinfo [obj_enemy3].class_   = class_enemy;
 
 		objinfo [obj_enemy4].na      = "ENEMY4";	// Hovercraft
 		objinfo [obj_enemy4].xl      = 16;
 		objinfo [obj_enemy4].yl      = 24;
 		objinfo [obj_enemy4].msg     = msg_enemy4;
 		objinfo [obj_enemy4].flags   = 0;
-		objinfo [obj_enemy4].class   = class_enemy;
+		objinfo [obj_enemy4].class_   = class_enemy;
 
 		objinfo [obj_enemy5].na      = "ENEMY5";	// Arrow Tip
 		objinfo [obj_enemy5].xl      = 16;
 		objinfo [obj_enemy5].yl      = 24;
 		objinfo [obj_enemy5].msg     = msg_enemy5;
 		objinfo [obj_enemy5].flags   = 0;
-		objinfo [obj_enemy5].class   = class_enemy;
+		objinfo [obj_enemy5].class_   = class_enemy;
 
 		objinfo [obj_enemy6].na      = "ENEMY6";	// Star Patroller
 		objinfo [obj_enemy6].xl      = 16;
 		objinfo [obj_enemy6].yl      = 24;
 		objinfo [obj_enemy6].msg     = msg_enemy6;
 		objinfo [obj_enemy6].flags   = 0;
-		objinfo [obj_enemy6].class   = class_enemy;
+		objinfo [obj_enemy6].class_   = class_enemy;
 
 		objinfo [obj_enemy7].na      = "ENEMY7";	// Kritzon Fighter
 		objinfo [obj_enemy7].xl      = 12;
 		objinfo [obj_enemy7].yl      = 20;
 		objinfo [obj_enemy7].msg     = msg_enemy7;
 		objinfo [obj_enemy7].flags   = 0;
-		objinfo [obj_enemy7].class   = class_enemy;
+		objinfo [obj_enemy7].class_   = class_enemy;
 
 		objinfo [obj_enemy8].na      = "ENEMY8";	// Attack Cruiser
 		objinfo [obj_enemy8].xl      = 20;
 		objinfo [obj_enemy8].yl      = 26;
 		objinfo [obj_enemy8].msg     = msg_enemy8;
 		objinfo [obj_enemy8].flags   = 0;
-		objinfo [obj_enemy8].class   = class_enemy;
+		objinfo [obj_enemy8].class_   = class_enemy;
 
 		objinfo [obj_enemy9].na      = "ENEMY9";	// Hawk Fighter
 		objinfo [obj_enemy9].xl      = 16;
 		objinfo [obj_enemy9].yl      = 24;
 		objinfo [obj_enemy9].msg     = msg_enemy9;
 		objinfo [obj_enemy9].flags   = 0;
-		objinfo [obj_enemy9].class   = class_enemy;
+		objinfo [obj_enemy9].class_   = class_enemy;
 
 		objinfo [obj_enemya].na      = "ENEMYA";	// Sardonian Cruiser
 		objinfo [obj_enemya].xl      = 16;
 		objinfo [obj_enemya].yl      = 24;
 		objinfo [obj_enemya].msg     = msg_enemya;
 		objinfo [obj_enemya].flags   = 0;
-		objinfo [obj_enemya].class   = class_enemy;
+		objinfo [obj_enemya].class_   = class_enemy;
 
 		objinfo [obj_enemyb].na      = "ENEMYB";	// Super Stealth
 		objinfo [obj_enemyb].xl      = 16;
 		objinfo [obj_enemyb].yl      = 24;
 		objinfo [obj_enemyb].msg     = msg_enemyb;
 		objinfo [obj_enemyb].flags   = 0;
-		objinfo [obj_enemyb].class   = class_enemy;
+		objinfo [obj_enemyb].class_   = class_enemy;
 
 		objinfo [obj_enemyc].na      = "ENEMYC";	// Alpha Xyntari
 		objinfo [obj_enemyc].xl      = 12;
 		objinfo [obj_enemyc].yl      = 24;
 		objinfo [obj_enemyc].msg     = msg_enemyc;
 		objinfo [obj_enemyc].flags   = 0;
-		objinfo [obj_enemyc].class   = class_enemy;
+		objinfo [obj_enemyc].class_   = class_enemy;
 
 		objinfo [obj_enemyd].na      = "ENEMYD";	// Electra Flame
 		objinfo [obj_enemyd].xl      = 10;
 		objinfo [obj_enemyd].yl      = 16;
 		objinfo [obj_enemyd].msg     = msg_enemyd;
 		objinfo [obj_enemyd].flags   = 0;
-		objinfo [obj_enemyd].class   = class_enemy;
+		objinfo [obj_enemyd].class_   = class_enemy;
 
 		objinfo [obj_enemye].na      = "ENEMYE";	// Robot Ship
 		objinfo [obj_enemye].xl      = 8;
 		objinfo [obj_enemye].yl      = 12;
 		objinfo [obj_enemye].msg     = msg_enemye;
 		objinfo [obj_enemye].flags   = 0;
-		objinfo [obj_enemye].class   = class_enemy;
+		objinfo [obj_enemye].class_   = class_enemy;
 
 		objinfo [obj_enemyf].na      = "ENEMYF";	// Apocalypse
 		objinfo [obj_enemyf].xl      = 10;
 		objinfo [obj_enemyf].yl      = 16;
 		objinfo [obj_enemyf].msg     = msg_enemyf;
 		objinfo [obj_enemyf].flags   = 0;
-		objinfo [obj_enemyf].class   = class_enemy;
+		objinfo [obj_enemyf].class_   = class_enemy;
 
 		objinfo [obj_enemyg].na      = "ENEMYG";	// Blue Spearhead
 		objinfo [obj_enemyg].xl      = 10;
 		objinfo [obj_enemyg].yl      = 16;
 		objinfo [obj_enemyg].msg     = msg_enemyg;
 		objinfo [obj_enemyg].flags   = 0;
-		objinfo [obj_enemyg].class   = class_enemy;
+		objinfo [obj_enemyg].class_   = class_enemy;
 
 		objinfo [obj_enemyh].na      = "ENEMYH";	// Galactic Starduster
 		objinfo [obj_enemyh].xl      = 8;
 		objinfo [obj_enemyh].yl      = 20;
 		objinfo [obj_enemyh].msg     = msg_enemyh;
 		objinfo [obj_enemyh].flags   = 0;
-		objinfo [obj_enemyh].class   = class_enemy;
+		objinfo [obj_enemyh].class_   = class_enemy;
 
 		objinfo [obj_enemyi].na      = "ENEMYI";	// X-15 Destroyer
 		objinfo [obj_enemyi].xl      = 20;
 		objinfo [obj_enemyi].yl      = 22;
 		objinfo [obj_enemyi].msg     = msg_enemyi;
 		objinfo [obj_enemyi].flags   = 0;
-		objinfo [obj_enemyi].class   = class_enemy;
+		objinfo [obj_enemyi].class_   = class_enemy;
 
 		objinfo [obj_enemyj].na      = "ENEMYJ";	// The Avenger
 		objinfo [obj_enemyj].xl      = 10;
 		objinfo [obj_enemyj].yl      = 16;
 		objinfo [obj_enemyj].msg     = msg_enemyj;
 		objinfo [obj_enemyj].flags   = 0;
-		objinfo [obj_enemyj].class   = class_enemy;
+		objinfo [obj_enemyj].class_   = class_enemy;
 
 		objinfo [obj_enemyk].na      = "ENEMYK";
 		objinfo [obj_enemyk].xl      = 14;
 		objinfo [obj_enemyk].yl      = 14;
 		objinfo [obj_enemyk].msg     = msg_enemyk;
 		objinfo [obj_enemyk].flags   = 0;
-		objinfo [obj_enemyk].class   = class_enemy;
+		objinfo [obj_enemyk].class_   = class_enemy;
 
 		objinfo [obj_ejected].na     = "EJECTED";
 		objinfo [obj_ejected].xl     = 4;
 		objinfo [obj_ejected].yl     = 6;
 		objinfo [obj_ejected].msg    = msg_ejected;
 		objinfo [obj_ejected].flags  = 1;
-		objinfo [obj_ejected].class  = 0;
+		objinfo [obj_ejected].class_  = 0;
 
 		objinfo [obj_explode1].na    = "EXPLODE1";
 		objinfo [obj_explode1].xl    = 12;
 		objinfo [obj_explode1].yl    = 12;
 		objinfo [obj_explode1].msg   = msg_explode1;
 		objinfo [obj_explode1].flags = 1;
-		objinfo [obj_explode1].class = 0;
+		objinfo [obj_explode1].class_ = 0;
 
 		objinfo [obj_explode2].na    = "EXPLODE2";
 		objinfo [obj_explode2].xl    = 14;
 		objinfo [obj_explode2].yl    = 14;
 		objinfo [obj_explode2].msg   = msg_explode2;
 		objinfo [obj_explode2].flags = 1;
-		objinfo [obj_explode2].class = 0;
+		objinfo [obj_explode2].class_ = 0;
 
 		objinfo [obj_explode3].na    = "EXPLODE3";
 		objinfo [obj_explode3].xl    = 30;
 		objinfo [obj_explode3].yl    = 26;
 		objinfo [obj_explode3].msg   = msg_explode3;
 		objinfo [obj_explode3].flags = 1;
-		objinfo [obj_explode3].class = 0;
+		objinfo [obj_explode3].class_ = 0;
 
 		objinfo [obj_explode4].na    = "EXPLODE4";
 		objinfo [obj_explode4].xl    = 6;
 		objinfo [obj_explode4].yl    = 4;
 		objinfo [obj_explode4].msg   = msg_explode4;
 		objinfo [obj_explode4].flags = 1;
-		objinfo [obj_explode4].class = 0;
+		objinfo [obj_explode4].class_ = 0;
 
 		objinfo [obj_explode5].na    = "EXPLODE5";
 		objinfo [obj_explode5].xl    = 16;
 		objinfo [obj_explode5].yl    = 16;
 		objinfo [obj_explode5].msg   = msg_explode5;
 		objinfo [obj_explode5].flags = 1;
-		objinfo [obj_explode5].class = 0;
+		objinfo [obj_explode5].class_ = 0;
 
 		objinfo [obj_explode6].na    = "EXPLODE6";
 		objinfo [obj_explode6].xl    = 16;
 		objinfo [obj_explode6].yl    = 16;
 		objinfo [obj_explode6].msg   = msg_explode6;
 		objinfo [obj_explode6].flags = 1;
-		objinfo [obj_explode6].class = 0;
+		objinfo [obj_explode6].class_ = 0;
 
 		objinfo [obj_triple].na      = "TRIPLE";
 		objinfo [obj_triple].xl      = 8;
 		objinfo [obj_triple].yl      = 8;
 		objinfo [obj_triple].msg     = msg_triple;
 		objinfo [obj_triple].flags   = 0;
-		objinfo [obj_triple].class   = 0;
+		objinfo [obj_triple].class_   = 0;
 
 		objinfo [obj_bonus1].na      = "BONUS1";
 		objinfo [obj_bonus1].xl      = 16;
 		objinfo [obj_bonus1].yl      = 16;
 		objinfo [obj_bonus1].msg     = msg_bonus1;
 		objinfo [obj_bonus1].flags   = 0;
-		objinfo [obj_bonus1].class   = 0;
+		objinfo [obj_bonus1].class_   = 0;
 
 		objinfo [obj_bonus2].na      = "BONUS2";
 		objinfo [obj_bonus2].xl      = 8;
 		objinfo [obj_bonus2].yl      = 10;
 		objinfo [obj_bonus2].msg     = msg_bonus2;
 		objinfo [obj_bonus2].flags   = 0;
-		objinfo [obj_bonus2].class   = 0;
+		objinfo [obj_bonus2].class_   = 0;
 
 		objinfo [obj_bonus3].na      = "BONUS3";
 		objinfo [obj_bonus3].xl      = 8;
 		objinfo [obj_bonus3].yl      = 10;
 		objinfo [obj_bonus3].msg     = msg_bonus3;
 		objinfo [obj_bonus3].flags   = 0;
-		objinfo [obj_bonus3].class   = 0;
+		objinfo [obj_bonus3].class_   = 0;
 
 		objinfo [obj_bonus4].na      = "BONUS4";
 		objinfo [obj_bonus4].xl      = 8;
 		objinfo [obj_bonus4].yl      = 10;
 		objinfo [obj_bonus4].msg     = msg_bonus4;
 		objinfo [obj_bonus4].flags   = 0;
-		objinfo [obj_bonus4].class   = 0;
+		objinfo [obj_bonus4].class_   = 0;
 
 		objinfo [obj_bonus5].na      = "BONUS5";
 		objinfo [obj_bonus5].xl      = 8;
 		objinfo [obj_bonus5].yl      = 10;
 		objinfo [obj_bonus5].msg     = msg_bonus5;
 		objinfo [obj_bonus5].flags   = 0;
-		objinfo [obj_bonus5].class   = 0;
+		objinfo [obj_bonus5].class_   = 0;
 
 		objinfo [obj_wing1].na       = "WING1";
 		objinfo [obj_wing1].xl       = 8;
 		objinfo [obj_wing1].yl       = 10;
 		objinfo [obj_wing1].msg      = msg_wing1;
 		objinfo [obj_wing1].flags    = 0;
-		objinfo [obj_wing1].class    = class_wing1;
+		objinfo [obj_wing1].class_    = class_wing1;
 
 		objinfo [obj_wing2].na       = "WING2";
 		objinfo [obj_wing2].xl       = 8;
 		objinfo [obj_wing2].yl       = 10;
 		objinfo [obj_wing2].msg      = msg_wing2;
 		objinfo [obj_wing2].flags    = 0;
-		objinfo [obj_wing2].class    = class_wing2;
+		objinfo [obj_wing2].class_    = class_wing2;
 
 		objinfo [obj_wing3].na       = "WING3";
 		objinfo [obj_wing3].xl       = 8;
 		objinfo [obj_wing3].yl       = 10;
 		objinfo [obj_wing3].msg      = msg_wing3;
 		objinfo [obj_wing3].flags    = 0;
-		objinfo [obj_wing3].class    = class_wing3;
+		objinfo [obj_wing3].class_    = class_wing3;
 
 		objinfo [obj_wing4].na       = "WING4";
 		objinfo [obj_wing4].xl       = 8;
 		objinfo [obj_wing4].yl       = 10;
 		objinfo [obj_wing4].msg      = msg_wing4;
 		objinfo [obj_wing4].flags    = 0;
-		objinfo [obj_wing4].class    = class_wing4;
+		objinfo [obj_wing4].class_    = class_wing4;
 
 		objinfo [obj_stars].na       = "STARS";
 		objinfo [obj_stars].xl       = 4;
 		objinfo [obj_stars].yl       = 4;
 		objinfo [obj_stars].msg      = msg_stars;
 		objinfo [obj_stars].flags    = 1;
-		objinfo [obj_stars].class    = 0;
+		objinfo [obj_stars].class_    = 0;
 
 		objinfo [obj_falling].na     = "FALLING";
 		objinfo [obj_falling].xl     = 4;
 		objinfo [obj_falling].yl     = 4;
 		objinfo [obj_falling].msg    = msg_falling;
 		objinfo [obj_falling].flags  = 1;
-		objinfo [obj_falling].class  = 0;
+		objinfo [obj_falling].class_  = 0;
 
 		objinfo [obj_score].na       = "SCORE";
 		objinfo [obj_score].xl       = 0;
 		objinfo [obj_score].yl       = 8;
 		objinfo [obj_score].msg      = msg_score;
 		objinfo [obj_score].flags    = 1;
-		objinfo [obj_score].class    = 0;
+		objinfo [obj_score].class_    = 0;
 
 		objinfo [obj_level1].na      = "LEVEL1";
 		objinfo [obj_level1].xl      = 64;
 		objinfo [obj_level1].yl      = 8;
 		objinfo [obj_level1].msg     = msg_level1;
 		objinfo [obj_level1].flags   = 1;
-		objinfo [obj_level1].class   = 0;
+		objinfo [obj_level1].class_   = 0;
 
 		objinfo [obj_shield].na      = "SHIELD";
 		objinfo [obj_shield].xl      = 16;
 		objinfo [obj_shield].yl      = 22;
 		objinfo [obj_shield].msg     = msg_shield;
 		objinfo [obj_shield].flags   = 0;
-		objinfo [obj_shield].class   = class_shield;
+		objinfo [obj_shield].class_   = class_shield;
 
 		objinfo [obj_laser].na       = "LASER";
 		objinfo [obj_laser].xl       = 2;
 		objinfo [obj_laser].yl       = 30;
 		objinfo [obj_laser].msg      = msg_laser;
 		objinfo [obj_laser].flags    = 0;
-		objinfo [obj_laser].class    = 0;
+		objinfo [obj_laser].class_    = 0;
 
 		objinfo [obj_max].na         = "MAX";
 		objinfo [obj_max].xl         = 12;
 		objinfo [obj_max].yl         = 20;
 		objinfo [obj_max].msg        = msg_max;
 		objinfo [obj_max].flags      = 0;
-		objinfo [obj_max].class      = 0;
+		objinfo [obj_max].class_      = 0;
 
 		objinfo [obj_mines].na       = "MINES";
 		objinfo [obj_mines].xl       = 8;
 		objinfo [obj_mines].yl       = 8;
 		objinfo [obj_mines].msg      = msg_mines;
 		objinfo [obj_mines].flags    = 0;
-		objinfo [obj_mines].class    = 0;
+		objinfo [obj_mines].class_    = 0;
 
 		objinfo [obj_demo].na        = "DEMO";
 		objinfo [obj_demo].xl        = 30;
 		objinfo [obj_demo].yl        = 8;
 		objinfo [obj_demo].msg       = msg_demo;
 		objinfo [obj_demo].flags     = 1;
-		objinfo [obj_demo].class     = 0;
+		objinfo [obj_demo].class_     = 0;
 
 		objinfo [obj_jump1].na       = "JUMP1";
 		objinfo [obj_jump1].xl       = 18;
 		objinfo [obj_jump1].yl       = 18;
 		objinfo [obj_jump1].msg      = msg_jump1;
 		objinfo [obj_jump1].flags    = 1;
-		objinfo [obj_jump1].class    = 0;
+		objinfo [obj_jump1].class_    = 0;
 
 		objinfo [obj_jump2].na       = "JUMP2";
 		objinfo [obj_jump2].xl       = 18;
 		objinfo [obj_jump2].yl       = 18;
 		objinfo [obj_jump2].msg      = msg_jump2;
 		objinfo [obj_jump2].flags    = 1;
-		objinfo [obj_jump2].class    = 0;
+		objinfo [obj_jump2].class_    = 0;
 		};
 
-int msg_enemy1 (int n, int msg, int z) {		// Colonial Warrior
-	int sh, x, y;
+int16_t msg_enemy1 (int16_t n, int16_t msg, int16_t z) {		// Colonial Warrior
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -516,8 +515,8 @@ int msg_enemy1 (int n, int msg, int z) {		// Colonial Warrior
 				objs[n].count2 = 0;
 				};
 			move_obj (n, objs[n].x+objs[n].xd, objs[n].y+objs[n].yd);
-			if (random(70)==0) objs[n].x = rand()%232;
-			if (random(50)==0) {
+			if (xr_random(70)==0) objs[n].x = rand()%232;
+			if (xr_random(50)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -528,13 +527,13 @@ int msg_enemy1 (int n, int msg, int z) {		// Colonial Warrior
 		}; return (0);
 	};
 
-int msg_enemy2 (int n, int msg, int z) {		// Small Orzot Fighter
-	int sh, x, y, ax, ay;
+int16_t msg_enemy2 (int16_t n, int16_t msg, int16_t z) {		// Small Orzot Fighter
+	int16_t sh, x, y, ax, ay;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
 			if (objs[n].count2==0) {
-				switch (random(2)) {
+				switch (xr_random(2)) {
 					case 0: objs[n].count2 = 1; break;
 					case 1: objs[n].count2 = 2; break;
 					};
@@ -544,7 +543,7 @@ int msg_enemy2 (int n, int msg, int z) {		// Small Orzot Fighter
 			move_obj (n, objs[n].x+(objs[n].xd+=ax),
 				objs[n].y+(objs[n].yd+=ay));
 			if (objs[n].y >= 144) objs[n].y = 144;
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -555,8 +554,8 @@ int msg_enemy2 (int n, int msg, int z) {		// Small Orzot Fighter
 		}; return (0);
 	};
 
-int msg_enemy3 (int n, int msg, int z) {		// Omikron Invader
-	int sh, x, y;
+int16_t msg_enemy3 (int16_t n, int16_t msg, int16_t z) {		// Omikron Invader
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -587,7 +586,7 @@ int msg_enemy3 (int n, int msg, int z) {		// Omikron Invader
 				enemy_cnt--; killobj (n);
 				};
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
-			if (random(50)==0) {
+			if (xr_random(50)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				}; break;
@@ -598,8 +597,8 @@ int msg_enemy3 (int n, int msg, int z) {		// Omikron Invader
 		}; return (0);
 	};
 
-int msg_enemy4 (int n, int msg, int z) {		// Hovercraft
-	int sh, x, y, dx, dy;
+int16_t msg_enemy4 (int16_t n, int16_t msg, int16_t z) {		// Hovercraft
+	int16_t sh, x, y, dx, dy;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -610,7 +609,7 @@ int msg_enemy4 (int n, int msg, int z) {		// Hovercraft
 				objs[n].count2 = 0;
 				};
 			move_obj (n, objs[n].x+(objs[n].xd+=dx), objs[n].y+objs[n].yd);
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 //				addobj (obj_bullet2, x-8, y-10, 0, 4);
 //				addobj (obj_bullet2, x+8, y-10, 0, 4);
@@ -623,8 +622,8 @@ int msg_enemy4 (int n, int msg, int z) {		// Hovercraft
 		}; return (0);
 	};
 
-int msg_enemy5 (int n, int msg, int z) {		// Arrow Tip
-	int sh, x, y;
+int16_t msg_enemy5 (int16_t n, int16_t msg, int16_t z) {		// Arrow Tip
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -632,7 +631,7 @@ int msg_enemy5 (int n, int msg, int z) {		// Arrow Tip
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				objs[n].yd = -3;
-				switch (random(2)) {
+				switch (xr_random(2)) {
 					case 0: objs[n].xd = 8; break;
 					case 1: objs[n].xd = -8;
 					};
@@ -649,8 +648,8 @@ int msg_enemy5 (int n, int msg, int z) {		// Arrow Tip
 		}; return (0);
 	};
 
-int msg_enemy6 (int n, int msg, int z) {		// Star Patroller
-	int sh, x, y, l_y;
+int16_t msg_enemy6 (int16_t n, int16_t msg, int16_t z) {		// Star Patroller
+	int16_t sh, x, y, l_y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -666,7 +665,7 @@ int msg_enemy6 (int n, int msg, int z) {		// Star Patroller
 				objs[n].count2 = 0;
 				};
 			objs[n].y += objs[n].yd;
-			if (random(60)==0) {
+			if (xr_random(60)==0) {
 				snd_play (1,21);
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				for (l_y = y; l_y < scrn_y + 1; l_y += 30) {
@@ -680,13 +679,13 @@ int msg_enemy6 (int n, int msg, int z) {		// Star Patroller
 		}; return (0);
 	};
 
-int msg_enemy7 (int n, int msg, int z) {		// Kritzon Fighter
-	int sh, x, y, ax, ay;
+int16_t msg_enemy7 (int16_t n, int16_t msg, int16_t z) {		// Kritzon Fighter
+	int16_t sh, x, y, ax, ay;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
 			if (objs[n].count2==0) {
-				switch (random(2)) {
+				switch (xr_random(2)) {
 					case 0: objs[n].count2 = 1; break;
 					case 1: objs[n].count2 = 2; break;
 					};
@@ -696,7 +695,7 @@ int msg_enemy7 (int n, int msg, int z) {		// Kritzon Fighter
 			move_obj (n, objs[n].x+(objs[n].xd+=ax),
 				objs[n].y+(objs[n].yd+=ay));
 			if (objs[n].y >= 144) objs[n].y = 144;
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -707,15 +706,15 @@ int msg_enemy7 (int n, int msg, int z) {		// Kritzon Fighter
 		}; return (0);
 	};
 
-int msg_enemy8 (int n, int msg, int z) {		// Attack Cruiser
-	int sh, x, y, dx, dy;
+int16_t msg_enemy8 (int16_t n, int16_t msg, int16_t z) {		// Attack Cruiser
+	int16_t sh, x, y, dx, dy;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
 			if (objs[n].count3==0) objs[n].count3 = 10;
 			seekplayer (n, &dx, &dy);
 			move_obj (n, objs[n].x+(objs[n].xd+=dx), objs[n].y);
-			if (random(50)==0) {
+			if (xr_random(50)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-8, y-10, 0, 4);
 				addobj (obj_bullet2, x+8, y-10, 0, 4);
@@ -728,8 +727,8 @@ int msg_enemy8 (int n, int msg, int z) {		// Attack Cruiser
 		}; return (0);
 	};
 
-int msg_enemy9 (int n, int msg, int z) {		// Hawk Fighter
-	int sh, x, y;
+int16_t msg_enemy9 (int16_t n, int16_t msg, int16_t z) {		// Hawk Fighter
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -740,7 +739,7 @@ int msg_enemy9 (int n, int msg, int z) {		// Hawk Fighter
 			move_obj (n, objs[n].x+objs[n].xd, objs[n].y+objs[n].yd);
 			if (objs[n].x==0) objs[n].xd = 6;
 			if (objs[n].x+objs[n].xl==scrn_x) objs[n].xd = -6;
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				}; break;
@@ -751,8 +750,8 @@ int msg_enemy9 (int n, int msg, int z) {		// Hawk Fighter
 		}; return (0);
 	};
 
-int msg_enemya (int n, int msg, int z) {		// Sardonian Cruiser
-	int sh, x, y, ax, ay;
+int16_t msg_enemya (int16_t n, int16_t msg, int16_t z) {		// Sardonian Cruiser
+	int16_t sh, x, y, ax, ay;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&2;
@@ -760,7 +759,7 @@ int msg_enemya (int n, int msg, int z) {		// Sardonian Cruiser
 			attract3 (n, &ax, &ay);
 			move_obj (n, objs[n].x+(objs[n].xd+=ax),
 				objs[n].y+(objs[n].yd+=ay));
-			if (random(50)==0) {
+			if (xr_random(50)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				}; break;
@@ -771,26 +770,26 @@ int msg_enemya (int n, int msg, int z) {		// Sardonian Cruiser
 		}; return (0);
 	};
 
-int msg_enemyb (int n, int msg, int z) {		// Super Stealth Fighter
-	int sh, x, y, dx, dy;
+int16_t msg_enemyb (int16_t n, int16_t msg, int16_t z) {		// Super Stealth Fighter
+	int16_t sh, x, y, dx, dy;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count3==0) objs[n].count3 = 4;
 			seekplayer (n, &dx, &dy);
 			move_obj (n, objs[n].x+(objs[n].xd+=dx), objs[n].y);
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
 
 		case msg_draw:
-			sh = 0xb10 + random (objs[n].count3);
+			sh = 0xb10 + xr_random (objs[n].count3);
 			drawshape (&gamevp, sh, objs[n].x, objs[n].y);
 		}; return (0);
 	};
 
-int msg_enemyc (int n, int msg, int z) {		// Alpha Xyntari
-	int sh, x, y;
+int16_t msg_enemyc (int16_t n, int16_t msg, int16_t z) {		// Alpha Xyntari
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -804,7 +803,7 @@ int msg_enemyc (int n, int msg, int z) {		// Alpha Xyntari
 				if (objs[n].x >= 122) objs[n].xd = 12;
 				};
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				}; break;
@@ -815,13 +814,13 @@ int msg_enemyc (int n, int msg, int z) {		// Alpha Xyntari
 		}; return (0);
 	};
 
-int msg_enemyd (int n, int msg, int z) {		// Electra Flame
-	int sh, x, y, ax, ay, dx, dy;
+int16_t msg_enemyd (int16_t n, int16_t msg, int16_t z) {		// Electra Flame
+	int16_t sh, x, y, ax, ay, dx, dy;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
 			if (objs[n].count2==0) {
-				switch (random(2)) {
+				switch (xr_random(2)) {
 					case 0: objs[n].count2 = 1; break;
 					case 1: objs[n].count2 = 2; break;
 					};
@@ -832,7 +831,7 @@ int msg_enemyd (int n, int msg, int z) {		// Electra Flame
 			move_obj (n, objs[n].x+(objs[n].xd+=dx),
 				objs[n].y+(objs[n].yd+=ay));
 			if (objs[n].y >= 144) objs[n].y = 144;
-			if (random(50)==0) {
+			if (xr_random(50)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -843,14 +842,14 @@ int msg_enemyd (int n, int msg, int z) {		// Electra Flame
 		}; return (0);
 	};
 
-int msg_enemye (int n, int msg, int z) {		// Robot Ship
-	int sh, x, y;
+int16_t msg_enemye (int16_t n, int16_t msg, int16_t z) {		// Robot Ship
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
-			objs[n].xd += (random(3) - 1) * (1 + (abs(objs[n].xd) < 3));
+			objs[n].xd += (xr_random(3) - 1) * (1 + (abs(objs[n].xd) < 3));
 			objs[n].xd = max(-8, min(8, objs[n].xd));
-			objs[n].yd += (random(3) - 1) * (1 + (abs(objs[n].yd < 2)));
+			objs[n].yd += (xr_random(3) - 1) * (1 + (abs(objs[n].yd < 2)));
 			objs[n].yd = max(-8, min(8, objs[n].yd));
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
 			if (objs[n].x <= 0) {
@@ -865,7 +864,7 @@ int msg_enemye (int n, int msg, int z) {		// Robot Ship
 			if (objs[n].y >= 64) {
 				objs[n].y = 64; objs[n].yd = -objs[n].yd;
 				};
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -876,13 +875,13 @@ int msg_enemye (int n, int msg, int z) {		// Robot Ship
 		}; return (0);
 	};
 
-int msg_enemyf (int n, int msg, int z) {		// Apocalypse
-	int sh, x, y, ax, ay;
+int16_t msg_enemyf (int16_t n, int16_t msg, int16_t z) {		// Apocalypse
+	int16_t sh, x, y, ax, ay;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
 			if (objs[n].count2==0) {
-				switch (random(3)) {
+				switch (xr_random(3)) {
 					case 0: objs[n].count2 = 1; break;
 					case 1: objs[n].count2 = 2; break;
 					case 2: objs[n].count2 = 3;
@@ -894,7 +893,7 @@ int msg_enemyf (int n, int msg, int z) {		// Apocalypse
 			move_obj (n, objs[n].x+(objs[n].xd+=ax),
 				objs[n].y+(objs[n].yd+=ay));
 			if (objs[n].y >= 144) objs[n].y = 144;
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -905,8 +904,8 @@ int msg_enemyf (int n, int msg, int z) {		// Apocalypse
 		}; return (0);
 	};
 
-int msg_enemyg (int n, int msg, int z) {		// Blue Spearhead
-	int sh, x, y;
+int16_t msg_enemyg (int16_t n, int16_t msg, int16_t z) {		// Blue Spearhead
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -914,7 +913,7 @@ int msg_enemyg (int n, int msg, int z) {		// Blue Spearhead
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				objs[n].yd = -3;
-				switch (random(2)) {
+				switch (xr_random(2)) {
 					case 0: objs[n].xd = 8; break;
 					case 1: objs[n].xd = -8;
 					};
@@ -932,8 +931,8 @@ int msg_enemyg (int n, int msg, int z) {		// Blue Spearhead
 		}; return (0);
 	};
 
-int msg_enemyh (int n, int msg, int z) {		// Galactic Starduster
-	int sh, x, y;
+int16_t msg_enemyh (int16_t n, int16_t msg, int16_t z) {		// Galactic Starduster
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -946,7 +945,7 @@ int msg_enemyh (int n, int msg, int z) {		// Galactic Starduster
 				objs[n].xd = 8;
 				};
 			objs[n].x += objs[n].xd;
-			if (random(50)==0) {
+			if (xr_random(50)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_bullet2, x-2, y, 0, 4);
 				}; break;
@@ -957,8 +956,8 @@ int msg_enemyh (int n, int msg, int z) {		// Galactic Starduster
 		}; return (0);
 	};
 
-int msg_enemyi (int n, int msg, int z) {		// X-15 Destroyer
-	int sh, x, y, ax, ay, l_y;
+int16_t msg_enemyi (int16_t n, int16_t msg, int16_t z) {		// X-15 Destroyer
+	int16_t sh, x, y, ax, ay, l_y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -967,7 +966,7 @@ int msg_enemyi (int n, int msg, int z) {		// X-15 Destroyer
 			if (objs[n].y==0) objs[n].yd = 6;
 			if (objs[n].y > 96) objs[n].yd = -10;
 			move_obj (n, objs[n].x+(objs[n].xd+=ax), objs[n].y+objs[n].yd);
-			if (random(60)==0) {
+			if (xr_random(60)==0) {
 				snd_play (1,21);
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
@@ -983,8 +982,8 @@ int msg_enemyi (int n, int msg, int z) {		// X-15 Destroyer
 		}; return (0);
 	};
 
-int msg_enemyj (int n, int msg, int z) {		// The Avenger
-	int sh, x, y;
+int16_t msg_enemyj (int16_t n, int16_t msg, int16_t z) {		// The Avenger
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count2==0) {
@@ -992,9 +991,9 @@ int msg_enemyj (int n, int msg, int z) {		// The Avenger
 				objs[n].count2 = 1;
 				};
 			objs[n].count = (objs[n].count + 1)&3;
-			objs[n].xd += (random(3) - 1) * (1 + (abs(objs[n].xd) < 3));
+			objs[n].xd += (xr_random(3) - 1) * (1 + (abs(objs[n].xd) < 3));
 			objs[n].xd = max(-8, min(8, objs[n].xd));
-			objs[n].yd += (random(3) - 1) * (1 + (abs(objs[n].yd < 2)));
+			objs[n].yd += (xr_random(3) - 1) * (1 + (abs(objs[n].yd < 2)));
 			objs[n].yd = max(-8, min(8, objs[n].yd));
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
 			if (objs[n].x <= 0) {
@@ -1009,7 +1008,7 @@ int msg_enemyj (int n, int msg, int z) {		// The Avenger
 			if (objs[n].y >= 64) {
 				objs[n].y = 64; objs[n].yd = -objs[n].yd;
 				};
-			if (random(40)==0) {
+			if (xr_random(40)==0) {
 				x = objs[n].x + objs[n].xl/2; y = objs[n].y + objs[n].yl;
 				addobj (obj_spinner, x-3, y, 0, 4);
 				}; break;
@@ -1020,14 +1019,14 @@ int msg_enemyj (int n, int msg, int z) {		// The Avenger
 		}; return (0);
 	};
 
-int msg_enemyk (int n, int msg, int z) {		// Kilofire Interceptor
-	int sh, ax, ay;
+int16_t msg_enemyk (int16_t n, int16_t msg, int16_t z) {		// Kilofire Interceptor
+	int16_t sh, ax, ay;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 11) objs[n].count = 0;
 			if (objs[n].count2==0) {
 				addobj (obj_jump2, objs[n].x, objs[n].y, 0, 0);
-				switch (random(2)) {
+				switch (xr_random(2)) {
 					case 0: objs[n].count2 = 1; break;
 					case 1: objs[n].count2 = 2; break;
 					};
@@ -1044,7 +1043,7 @@ int msg_enemyk (int n, int msg, int z) {		// Kilofire Interceptor
 		}; return (0);
 	};
 
-void hit_bullet (int n, int z) {
+void hit_bullet (int16_t n, int16_t z) {
 	switch (objs[z].kind) {
 		case obj_enemy1:
 			fire_cnt--; killobj (n); points = 450;
@@ -1223,7 +1222,7 @@ void hit_bullet (int n, int z) {
 			};
 		};
 
-void hit_bomb (int n, int z) {
+void hit_bomb (int16_t n, int16_t z) {
 	switch (objs[z].kind) {
 		case obj_enemy1:
 			weapon_cnt--; killobj (n); points = 450;
@@ -1364,7 +1363,7 @@ void hit_bomb (int n, int z) {
 			};
 		};
 
-int msg_bullet (int n, int msg, int z) {		// player bullet
+int16_t msg_bullet (int16_t n, int16_t msg, int16_t z) {		// player bullet
 	switch (msg) {
 		case msg_update:
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
@@ -1382,7 +1381,7 @@ int msg_bullet (int n, int msg, int z) {		// player bullet
 		}; return (0);
 	};
 
-int msg_platinum (int n, int msg, int z) {		// player bullet
+int16_t msg_platinum (int16_t n, int16_t msg, int16_t z) {		// player bullet
 	switch (msg) {
 		case msg_update:
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
@@ -1400,8 +1399,8 @@ int msg_platinum (int n, int msg, int z) {		// player bullet
 		}; return (0);
 	};
 
-int msg_bomb (int n, int msg, int z) {
-	int sh;
+int16_t msg_bomb (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -1420,8 +1419,8 @@ int msg_bomb (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_missile (int n, int msg, int z) {
-	int sh;
+int16_t msg_missile (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -1459,8 +1458,8 @@ int msg_missile (int n, int msg, int z) {
 		}; return (0);
 	};
 
-void level (int d_flg) {		// setup for SHAREWARE version
-	int n;
+void level (int16_t d_flg) {		// setup for SHAREWARE version
+	int16_t n;
 	init_objs(); init_brd (); p_new ();
 	for (n = 32; n < 43; n++) {
 		shm_want [n]=0;
@@ -1717,22 +1716,22 @@ void level (int d_flg) {		// setup for SHAREWARE version
 	};
 
 void upd_objs2 (void) {
-	if ((random(2000)==0) && (pl.level > 3)) {
-		text (rnd_msg[random(10)],0);
+	if ((xr_random(2000)==0) && (pl.level > 3)) {
+		text (rnd_msg[xr_random(10)],0);
 		snd_play (2,19);
 		};
 	if (star_flag==0) {
-		if (random(300)==0) addobj (obj_falling,rand()%224,rand()%176,6,1);
+		if (xr_random(300)==0) addobj (obj_falling,rand()%224,rand()%176,6,1);
 		};
-	if (random(600)==0) addobj (obj_triple, 8, 54, 2, 2);
-	if (random(425)==0) addobj (obj_bonus1, rand()%240, 0, 0, 2);
-	if ((random(900)==0)&&(bonus_flg1==0)) {
+	if (xr_random(600)==0) addobj (obj_triple, 8, 54, 2, 2);
+	if (xr_random(425)==0) addobj (obj_bonus1, rand()%240, 0, 0, 2);
+	if ((xr_random(900)==0)&&(bonus_flg1==0)) {
 		addobj (obj_bonus2, rand()%240, 0, 0, 2);
 		bonus_flg1 = 1;
 		};
-	if (random(450)==0) addobj (obj_bonus3, rand()%240, 0, 0, 2);
-	if (random(400)==0) addobj (obj_bonus4, rand()%240, 0, 0, 2);
-	if ((random(800)==0)&&(bonus_flg2==0)) {
+	if (xr_random(450)==0) addobj (obj_bonus3, rand()%240, 0, 0, 2);
+	if (xr_random(400)==0) addobj (obj_bonus4, rand()%240, 0, 0, 2);
+	if ((xr_random(800)==0)&&(bonus_flg2==0)) {
 		addobj (obj_bonus5, rand()%240, 0, 0, 2);
 		if (pl.level < 21) bonus_flg2 = 1;
 		};
@@ -1741,11 +1740,11 @@ void upd_objs2 (void) {
 		addobj (obj_max, rand()%240, -20, 0, 3);
 		bonus_flg3 = 1;
 		};
-	if (random(80)==0) {x_pnt = rand()%224; y_pnt = rand()%176;};
-	if (random(100)==0) {x_pnt2 = rand()%224; y_pnt2 = rand()%156;};
-	if (random(60)==0) {x_pnt3 = rand()%224; y_pnt3 = 36;};
+	if (xr_random(80)==0) {x_pnt = rand()%224; y_pnt = rand()%176;};
+	if (xr_random(100)==0) {x_pnt2 = rand()%224; y_pnt2 = rand()%156;};
+	if (xr_random(60)==0) {x_pnt3 = rand()%224; y_pnt3 = 36;};
 
-	if (((random(200)==0)||(class_cnt(class_enemy) < 2))&&
+	if (((xr_random(200)==0)||(class_cnt(class_enemy) < 2))&&
 		(class_cnt(class_enemy) < level_flg)) {
 		if (enemy_cnt < (enemy_max + 1)) {
 			switch (pl.level) {
@@ -1769,7 +1768,7 @@ void upd_objs2 (void) {
 					addobj (obj_enemyj, rand()%240, rand()%32, 2, 2);
 					break;
 				case 10:
-					switch (random(3)) {
+					switch (xr_random(3)) {
 						case 0:
 							addobj (obj_enemyg, rand()%240, -16, 0,6);
 							addobj (obj_enemyg, rand()%240, -16, 0,6);
@@ -1800,7 +1799,7 @@ void upd_objs2 (void) {
 					addobj (obj_enemyk, rand()%240, rand()%32, 1, 1);
 					break;
 				case 29:
-					switch (random(3)) {
+					switch (xr_random(3)) {
 						case 0:
 							addobj (obj_enemyg, rand()%240, -16, 0,6);
 							addobj (obj_enemyg, rand()%240, -16, 0,6);
@@ -1810,7 +1809,7 @@ void upd_objs2 (void) {
 							break;
 						}; break;
 				case 30:
-					switch (random(3)) {
+					switch (xr_random(3)) {
 						case 0:
 							addobj (obj_enemyc, rand()%240, -24, 0,8);
 							addobj (obj_enemyc, rand()%240, -24, 0,8);
@@ -1843,7 +1842,7 @@ void wait (void) {
 	};
 
 void wait2 (void) {
-	int x, y;
+	int16_t x, y;
 	clrpal (); setpagemode (1);
 	for (x = 0; x < 20; x++) {
 		for (y = 0; y < end_y; y++) {
@@ -1859,7 +1858,7 @@ void wait2 (void) {
 	};
 
 void wait4 (void) {
-	int x, y;
+	int16_t x, y;
 	clrpal (); setpagemode (1);
 	for (x = 0; x < 20; x++) {
 		for (y = 0; y < end_y; y++) {
@@ -1873,8 +1872,8 @@ void wait4 (void) {
 	pageflip (); setpagemode (0); fadein ();
 	};
 
-void story (int page) {
-	int x, y;
+void story (int16_t page) {
+	int16_t x, y;
 	char tempstr[2];
 	wprint (&statvp, 20, 22, 1, itoa (page, tempstr, 10));
 	switch (page) {
@@ -2052,16 +2051,16 @@ void story (int page) {
 	};
 
 void menu (void) {
-	int cur = 0;
-	int oldcur = 1;
-	int count = 0;
-	int oldclock = 0;
-	int moveclock = 0;
-	int democlock = 0;
-	int done = 0;
-	int gotkey, c = 0;
-	int n, x, y;
-	int page;
+	int16_t cur = 0;
+	int16_t oldcur = 1;
+	int16_t count = 0;
+	int16_t oldclock = 0;
+	int16_t moveclock = 0;
+	int16_t democlock = 0;
+	int16_t done = 0;
+	int16_t gotkey, c = 0;
+	int16_t n, x, y;
+	int16_t page;
 	char s[2];
 	char keytab[]="PLWSIHDOCE";
 	text (k_msg,1); refresh (pagemode);
@@ -2076,7 +2075,7 @@ void menu (void) {
 		setpagemode (1);
 		defwin (&menuwin,7,40,8,6,0,0,textbox);
 		drawwin (&menuwin);
-		democlock = *myclock;
+		democlock = getclock();
 		snd_play (1,22);
 		fontcolor (&menuwin.inside, 15, -1);
 		wprint (&menuwin.inside, 10, 4, 2, "--- MAIN MENU ---");
@@ -2108,30 +2107,30 @@ void menu (void) {
 		pageflip (); setpagemode (0);
 
 		do {
-			if ((oldcur != cur) || (*myclock != oldclock)) {
+			if ((oldcur != cur) || (getclock() != oldclock)) {
 				if (++count >= 12) count = 0;
 				if ((count & 1) || (oldcur != cur)) {
 					drawshape (&menuwin.inside, 0x4709, 8, 16+oldcur*8);
 					drawshape (&menuwin.inside,
 						0x0201 + (count >> 1), 8, 16 + cur * 8);
 					};
-				oldclock = *myclock; oldcur = cur;
+				oldclock = getclock(); oldcur = cur;
 				};
 			checkctrl0 (0);
 			key = toupper(key);
-			if (((dx1 + dy1) != 0) && (abs(*myclock - moveclock) > 1)) {
-				moveclock = *myclock;
+			if (((dx1 + dy1) != 0) && (abs(getclock() - moveclock) > 1)) {
+				moveclock = getclock();
 				cur += dx1 + dy1;
 				if ((cur>=0)&&(cur<10)) snd_play (1,9);
 				cur = min (9, max(0, cur));
-				democlock = *myclock;
+				democlock = getclock();
 				};
 
-			if ((*myclock - democlock) > 300) key = 'D';
+			if ((getclock() - democlock) > 300) key = 'D';
 
 			gotkey = 0;
 			if (key==escape) key = 'E';
-			if (key==187) key='I';
+			if (key==k_f1) key='I';
 			if ((key==enter)||(key==' ')||(fire1)) {key=keytab[cur]; gotkey=1;}
 			else
 				for (c = 0; c < strlen(keytab); c++)

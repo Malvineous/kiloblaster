@@ -7,27 +7,26 @@
 //		shm_do   :Prepare shape tables (load/trash) using shm_want[]
 //		shm_exit :Terminate shape manager
 
-#include <stdlib.h>;
-#include <io.h>;
-#include <alloc.h>;
-#include <fcntl.h>;
-#include <string.h>;
-#include <math.h>;
-#include <mem.h>;
-#include "\develop\kilo2\include\gr.h";
+#include <stdlib.h>
+#include <fcntl.h>
+#include <string.h>
+#include <math.h>
+#include "include/gr.h"
 
-extern void rexit (int num);
+#include <assert.h>
 
-int shm_want[shm_maxtbls];
+extern void rexit (int16_t num);
+
+int16_t shm_want[shm_maxtbls];
 char *shm_tbladdr[shm_maxtbls];
-int shm_tbllen[shm_maxtbls];
-int shm_flags[shm_maxtbls];
+int16_t shm_tbllen[shm_maxtbls];
+int16_t shm_flags[shm_maxtbls];
 
 char shm_fname[80];
 char colortab[256];
 
 void shm_init (char *fname) {
-	int c;
+	int16_t c;
 
 	strcpy (shm_fname, fname);
 	for (c=0; c<shm_maxtbls; c++) {
@@ -37,7 +36,7 @@ void shm_init (char *fname) {
 	};
 
 void init8bit (void) {					// Init pallette for numcolorbits=8
-	int x;
+	int16_t x;
 
 	for (x=0; x<256; x++) {
 		colortab[x]=x;
@@ -48,21 +47,22 @@ void init8bit (void) {					// Init pallette for numcolorbits=8
 #define wr(addr,ofs,src,len) memcpy (addr+ofs,&src,len); ofs+=len
 #define wr1(addr,ofs,byt) *(addr+(ofs++))=byt
 
-void xlate_table (int n, char *addr, char *bucket1) {
+void xlate_table (int16_t n, char *addr, char *bucket1) {
 	unsigned char numshapes=0;
 	char numcolorbits=1;
-	int numrots;
-	long longcolor;
-	int len_cga, len_ega, len_vga, len;
+	uint16_t numrots;
+	uint32_t longcolor;
+	uint16_t len_cga, len_ega, len_vga;//, len;
+	unsigned long len;
 	byte xs, xsb, ys;
 	byte storetype;
 	byte c;
-	int x,y,b,flags;
+	int16_t x,y,b,flags;
 	char *bucket,*tempbucket;
 	unsigned char databyte,shapebyte;
-	unsigned int colorand, colorshift;
+	uint16_t colorand, colorshift;
 	char *dest;
-	int tblofs, dataofs;
+	uint16_t tblofs, dataofs;
 
 	readin (numshapes, addr, 1);
 	readin (numrots, addr, 2);
@@ -94,16 +94,24 @@ void xlate_table (int n, char *addr, char *bucket1) {
 	shm_flags[n]=flags;
 	tblofs=0;
 	dataofs=numshapes*4;
-  
+
 	for (c=0; c<numshapes; c++) {
 		readin (xs, addr, 1);
 		readin (ys, addr, 1);
 		readin (storetype, addr, 1);
 		bucket=bucket1;
+
+		if (numcolorbits < 8) {
+			// Skip over this non-VGA image
+			memset(bucket, 1, xs*ys);
+			addr += (xs*ys) / (8/numcolorbits);
+			printf("addr += %d\n", (xs*ys) / (8/numcolorbits));
+		}
+		else
 		//	Copy the actual pixel bitmap of the shape into bucket
-		if (storetype==st_byte) {
+		if ((storetype==st_byte) || (storetype==st_plain)) {
 			memcpy (bucket, addr, xs*ys);
-			(char*) addr+=(xs*ys);
+			addr+=(xs*ys);
 			};
 
 //	Now the shape definition is in memory at BUCKET
@@ -140,14 +148,14 @@ void xlate_table (int n, char *addr, char *bucket1) {
 	};
 
 void shm_do (void) {
-	long shoffset[128];
+	uint32_t shoffset[128];
 	char *shaddr[128];
-	int shlen[128];					// Dual purpose
+	uint16_t shlen[128];					// Dual purpose
 	int shafile;
 	int c;
 	char*bucket1;
  
-	bucket1=malloc (4096);
+	bucket1=malloc (320*200);
 	if (bucket1==NULL) rexit (9);
 	
 	for (c=0; c<shm_maxtbls; c++) {
@@ -165,6 +173,7 @@ void shm_do (void) {
 		if (!shm_want[c]) {
 	// This shape file exists, but not needed now.  Purge it from memory
 			if (shm_tbladdr[c]!=NULL) {
+//PORT				free (shm_tbladdr[c]);
 				free (shm_tbladdr[c]);
 				shm_tbladdr[c]=NULL;
 				};
@@ -182,14 +191,16 @@ void shm_do (void) {
 	for (c=0; c<shm_maxtbls; c++) {
 		if (shaddr[c]!=NULL) {
 			xlate_table (c,shaddr[c], bucket1);
+//PORT			free (shaddr[c]);
 			free (shaddr[c]);
 			};
 		};
+//PORT	free (bucket1);
 	free (bucket1);
 	};
 
 void shm_exit (void) {
-	int c;
+	int16_t c;
 	for (c=0; c<shm_maxtbls; c++) {
 		if (shm_tbladdr[c]!=NULL) {
 			free (shm_tbladdr[c]);

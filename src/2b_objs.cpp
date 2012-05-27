@@ -6,17 +6,17 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\music.h"
-#include "\develop\kilo2\include\2blaster.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/music.h"
+#include "include/2blaster.h"
 
 extern char k_msg2[];
 
-int msg_bullet2 (int n, int msg, int z) {		 // enemy bullet
-	int sh, dx, dy;
+int16_t msg_bullet2 (int16_t n, int16_t msg, int16_t z) {		 // enemy bullet
+	int16_t sh, dx, dy;
 	switch (msg) {
 		case msg_update:
 			objs[n].count=(objs[n].count+1)&7;
@@ -30,8 +30,8 @@ int msg_bullet2 (int n, int msg, int z) {		 // enemy bullet
 		}; return (0);
 	};
 
-int msg_spinner (int n, int msg, int z) {		 // enemy bullet
-	int sh, dx, dy;
+int16_t msg_spinner (int16_t n, int16_t msg, int16_t z) {		 // enemy bullet
+	int16_t sh, dx, dy;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -45,17 +45,17 @@ int msg_spinner (int n, int msg, int z) {		 // enemy bullet
 		}; return (0);
 	};
 
-void explosion (int x, int y, int num) {
-	int c;
+void explosion (int16_t x, int16_t y, int16_t num) {
+	int16_t c;
 	for (c = 0; c < num; c++) {
 		addobj (obj_explode4, x, y, 0, 0);
-		objs[num_objs-1].xd = random (7) - 3;
-		objs[num_objs-1].yd = random (11) - 8;
+		objs[num_objs-1].xd = xr_random (7) - 3;
+		objs[num_objs-1].yd = xr_random (11) - 8;
 		};
 	};
 
-int msg_explode1 (int n, int msg, int z) {
-	int sh;
+int16_t msg_explode1 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 16) killobj (n); return (1);
@@ -65,8 +65,8 @@ int msg_explode1 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_explode2 (int n, int msg, int z) {
-	int sh;
+int16_t msg_explode2 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 14) killobj (n); return (1);
@@ -76,8 +76,8 @@ int msg_explode2 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_explode3 (int n, int msg, int z) {
-	int sh;
+int16_t msg_explode3 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 12) killobj (n); return (1);
@@ -87,13 +87,13 @@ int msg_explode3 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_explode4 (int n, int msg, int z) {
-	int sh;
+int16_t msg_explode4 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
 			if (objs[n].count3==0) {
-				switch (random(6)) {
+				switch (xr_random(6)) {
 					case 0: objs[n].count3 = 1; break;
 					case 1: objs[n].count3 = 2; break;
 					case 2: objs[n].count3 = 3; break;
@@ -118,19 +118,19 @@ int msg_explode4 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_explode5 (int n, int msg, int z) {
-	int sh;
+int16_t msg_explode5 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count2++ >= 20) killobj (n); return (1);
 		case msg_draw:
-			sh = 0xd04 + random(5);
+			sh = 0xd04 + xr_random(5);
 			drawshape (&gamevp, sh, objs[n].x, objs[n].y);
 		}; return (0);
 	};
 
-int msg_explode6 (int n, int msg, int z) {
-	int sh;
+int16_t msg_explode6 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 20) killobj (n); return (1);
@@ -140,8 +140,8 @@ int msg_explode6 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_triple (int n, int msg, int z) {		// triple fire power
-	int sh;
+int16_t msg_triple (int16_t n, int16_t msg, int16_t z) {		// triple fire power
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -157,8 +157,8 @@ int msg_triple (int n, int msg, int z) {		// triple fire power
 		}; return (0);
 	};
 
-int msg_bonus1 (int n, int msg, int z) {		// pulsar--gives missiles
-	int sh;
+int16_t msg_bonus1 (int16_t n, int16_t msg, int16_t z) {		// pulsar--gives missiles
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -170,7 +170,7 @@ int msg_bonus1 (int n, int msg, int z) {		// pulsar--gives missiles
 		}; return (0);
 	};
 
-int msg_bonus2 (int n, int msg, int z) {		// spinach--invincibility
+int16_t msg_bonus2 (int16_t n, int16_t msg, int16_t z) {		// spinach--invincibility
 	switch (msg) {
 		case msg_update:
 			objs[n].y += objs[n].yd;
@@ -180,7 +180,7 @@ int msg_bonus2 (int n, int msg, int z) {		// spinach--invincibility
 		}; return (0);
 	};
 
-int msg_bonus3 (int n, int msg, int z) {		// apple--shields
+int16_t msg_bonus3 (int16_t n, int16_t msg, int16_t z) {		// apple--shields
 	switch (msg) {
 		case msg_update:
 			objs[n].y += objs[n].yd;
@@ -190,7 +190,7 @@ int msg_bonus3 (int n, int msg, int z) {		// apple--shields
 		}; return (0);
 	};
 
-int msg_bonus4 (int n, int msg, int z) {		// banana--points
+int16_t msg_bonus4 (int16_t n, int16_t msg, int16_t z) {		// banana--points
 	switch (msg) {
 		case msg_update:
 			objs[n].y += objs[n].yd;
@@ -200,7 +200,7 @@ int msg_bonus4 (int n, int msg, int z) {		// banana--points
 		}; return (0);
 	};
 
-int msg_bonus5 (int n, int msg, int z) {		// strawberry--wingmen
+int16_t msg_bonus5 (int16_t n, int16_t msg, int16_t z) {		// strawberry--wingmen
 	switch (msg) {
 		case msg_update:
 			objs[n].y += objs[n].yd;
@@ -210,16 +210,16 @@ int msg_bonus5 (int n, int msg, int z) {		// strawberry--wingmen
 		}; return (0);
 	};
 
-int msg_stars (int n, int msg, int z) {		// stars--just for looks!
-	int sh;
+int16_t msg_stars (int16_t n, int16_t msg, int16_t z) {		// stars--just for looks!
+	int16_t sh;
 	switch (msg) {
 		case msg_draw:
-			sh = 0xe00 + random (8);
+			sh = 0xe00 + xr_random (8);
 			drawshape (&gamevp, sh, objs[n].x, objs[n].y);
 		}; return (1);
 	};
 
-int msg_falling (int n, int msg, int z) {	// falling star--just for looks!
+int16_t msg_falling (int16_t n, int16_t msg, int16_t z) {	// falling star--just for looks!
 	switch (msg) {
 		case msg_update:
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
@@ -229,8 +229,8 @@ int msg_falling (int n, int msg, int z) {	// falling star--just for looks!
 		}; return (0);
 	};
 
-int msg_score (int n, int msg, int z) {
-	int c;
+int16_t msg_score (int16_t n, int16_t msg, int16_t z) {
+	int16_t c;
 	char tempstr[12];
 	switch (msg) {
 		case msg_update:
@@ -244,15 +244,15 @@ int msg_score (int n, int msg, int z) {
 			objs[n].x += objs[n].xd; objs[n].y += objs[n].yd;
 			if (++objs[n].count3==40) killobj(n); return (1);
 		case msg_draw:
-			c = random(5) + 10;
+			c = xr_random(5) + 10;
 			fontcolor (&gamevp, c, -1);
 			wprint (&gamevp, objs[n].x, objs[n].y, 1,
 			ultoa (objs[n].count2, tempstr, 10));
 		}; return (0);
 	};
 
-int msg_level1 (int n, int msg, int z) {
-	int c;
+int16_t msg_level1 (int16_t n, int16_t msg, int16_t z) {
+	int16_t c;
 	char tempstr[4];
 	char dest[12];
 	char *src1 = "LEVEL ", *src2 = itoa(pl.level, tempstr, 10);
@@ -265,14 +265,14 @@ int msg_level1 (int n, int msg, int z) {
 			objs[n].y += objs[n].yd;
 			if (objs[n].y + 8 < 0) killobj(n); return (1);
 		case msg_draw:
-			c = random(5) + 10;
+			c = xr_random(5) + 10;
 			fontcolor (&gamevp, c, -1);
 			wprint (&gamevp, objs[n].x, objs[n].y, 1, dest);
 		}; return (0);
 	};
 
-int msg_shield (int n, int msg, int z) {
-	int sh;
+int16_t msg_shield (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count2 >= 240)
@@ -322,7 +322,7 @@ int msg_shield (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_laser (int n, int msg, int z) {		 // enemy laser weapon
+int16_t msg_laser (int16_t n, int16_t msg, int16_t z) {		 // enemy laser weapon
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count2++ > 2) killobj (n); return (1);
@@ -331,8 +331,8 @@ int msg_laser (int n, int msg, int z) {		 // enemy laser weapon
 		}; return (0);
 	};
 
-int msg_max (int n, int msg, int z) {		// max shields
-	int sh;
+int16_t msg_max (int16_t n, int16_t msg, int16_t z) {		// max shields
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -344,8 +344,8 @@ int msg_max (int n, int msg, int z) {		// max shields
 		}; return (0);
 	};
 
-int msg_mines (int n, int msg, int z) {		// space mines
-	int sh, x, y;
+int16_t msg_mines (int16_t n, int16_t msg, int16_t z) {		// space mines
+	int16_t sh, x, y;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3; return (1);
@@ -372,17 +372,17 @@ int msg_mines (int n, int msg, int z) {		// space mines
 		}; return (0);
 	};
 
-void eject (int x, int y, int num) {
-	int c;
+void eject (int16_t x, int16_t y, int16_t num) {
+	int16_t c;
 	for (c = 0; c < num; c++) {
 		addobj (obj_ejected, x, y, 0, 0);
-		objs[num_objs-1].xd = random (7) - 3;
-		objs[num_objs-1].yd = random (11) - 8;
+		objs[num_objs-1].xd = xr_random (7) - 3;
+		objs[num_objs-1].yd = xr_random (11) - 8;
 		};
 	};
 
-int msg_ejected (int n, int msg, int z) {
-	int sh;
+int16_t msg_ejected (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&3;
@@ -396,19 +396,19 @@ int msg_ejected (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_killme (int n, int msg, int z) {
+int16_t msg_killme (int16_t n, int16_t msg, int16_t z) {
 	return (0);
 	};
 
-int msg_demo (int n, int msg, int z) {		// DEMO message
+int16_t msg_demo (int16_t n, int16_t msg, int16_t z) {		// DEMO message
 	switch (msg) {
 		case msg_draw:
 			drawshape (&gamevp, 0xd0e, 8, 8);
 		}; return (1);
 	};
 
-int msg_jump1 (int n, int msg, int z) {
-	int sh;
+int16_t msg_jump1 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 28) {
@@ -423,8 +423,8 @@ int msg_jump1 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_jump2 (int n, int msg, int z) {
-	int sh;
+int16_t msg_jump2 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			if (objs[n].count++ >= 13) killobj (n); return (1);

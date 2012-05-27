@@ -1,20 +1,23 @@
 // Header file for "Blaster.C"
 
+#include <stdint.h>
+#include "../port.h"
+
 #define end_x 16			// number of blocks 16 x 16
 #define end_y 12
 #define scrn_x 256			// number of pixels in game viewport
 #define scrn_y 192
 extern vptype gamevp, cmdvp, statvp, textvp;
-extern int board[end_x][end_y];
-extern int modflg[end_x][end_y];
-extern int gamecount, cnt_down;
-extern int fire_cnt, weapon_cnt;
-extern int wing1_x, wing1_y, wing2_x, wing2_y;
-extern int wing3_x, wing3_y, wing4_x, wing4_y;
-extern int star_flag, x_pnt, y_pnt, x_pnt2, y_pnt2, x_pnt3, y_pnt3;
-extern int bonus_flg1, bonus_flg2, bonus_flg3;
-extern int enemy_cnt, enemy_max, enemy_flag;
-extern unsigned long points, extra_ship;
+extern int16_t board[end_x][end_y];
+extern int16_t modflg[end_x][end_y];
+extern int16_t gamecount, cnt_down;
+extern int16_t fire_cnt, weapon_cnt;
+extern int16_t wing1_x, wing1_y, wing2_x, wing2_y;
+extern int16_t wing3_x, wing3_y, wing4_x, wing4_y;
+extern int16_t star_flag, x_pnt, y_pnt, x_pnt2, y_pnt2, x_pnt3, y_pnt3;
+extern int16_t bonus_flg1, bonus_flg2, bonus_flg3;
+extern int16_t enemy_cnt, enemy_max, enemy_flag;
+extern uint32_t points, extra_ship;
 #define modboard(x, y) modflg[x][y] |= mod_screen;
 
 #define mirrortabd {\
@@ -30,7 +33,7 @@ extern unsigned long points, extra_ship;
 #define numsaves    7
 extern char hiname [hilen][numhighs];
 extern char savename [numsaves][savelen];
-extern unsigned long hiscore [numhighs];
+extern uint32_t hiscore [numhighs];
 
 #define mod_screen  3		// For non-pageflipping
 #define mod_page0   1		// for page-flipping
@@ -71,9 +74,9 @@ extern unsigned long hiscore [numhighs];
 #define b_maxbkgnd  31
 
 typedef struct {
-	int sh;
+	int16_t sh;
 	char *na;
-	int flags;
+	int16_t flags;
 	} info_type;
 
 #define obj_player    0		// Define objects
@@ -135,69 +138,69 @@ typedef struct {
 
 #define maxobjkinds  56		// total objects
 
-int msg_player	     (int n, int msg, int z);
-int msg_killme      (int n, int msg, int z);
-int msg_bullet		(int n, int msg, int z);
-int msg_platinum    (int n, int msg, int z);
-int msg_bomb        (int n, int msg, int z);
-int msg_missile     (int n, int msg, int z);
-int msg_bullet2     (int n, int msg, int z);
-int msg_spinner     (int n, int msg, int z);
-int msg_enemy1		(int n, int msg, int z);
-int msg_enemy2      (int n, int msg, int z);
-int msg_enemy3      (int n, int msg, int z);
-int msg_enemy4      (int n, int msg, int z);
-int msg_enemy5      (int n, int msg, int z);
-int msg_enemy6      (int n, int msg, int z);
-int msg_enemy7      (int n, int msg, int z);
-int msg_enemy8      (int n, int msg, int z);
-int msg_enemy9      (int n, int msg, int z);
-int msg_enemya      (int n, int msg, int z);
-int msg_enemyb      (int n, int msg, int z);
-int msg_enemyc      (int n, int msg, int z);
-int msg_enemyd      (int n, int msg, int z);
-int msg_enemye      (int n, int msg, int z);
-int msg_enemyf      (int n, int msg, int z);
-int msg_enemyg      (int n, int msg, int z);
-int msg_enemyh      (int n, int msg, int z);
-int msg_enemyi      (int n, int msg, int z);
-int msg_enemyj      (int n, int msg, int z);
-int msg_enemyk      (int n, int msg, int z);
-int msg_ejected     (int n, int msg, int z);
-int msg_explode1    (int n, int msg, int z);
-int msg_explode2    (int n, int msg, int z);
-int msg_explode3    (int n, int msg, int z);
-int msg_explode4    (int n, int msg, int z);
-int msg_explode5    (int n, int msg, int z);
-int msg_explode6    (int n, int msg, int z);
-int msg_triple      (int n, int msg, int z);
-int msg_bonus1      (int n, int msg, int z);
-int msg_bonus2      (int n, int msg, int z);
-int msg_bonus3      (int n, int msg, int z);
-int msg_bonus4      (int n, int msg, int z);
-int msg_bonus5      (int n, int msg, int z);
-int msg_wing1       (int n, int msg, int z);
-int msg_wing2       (int n, int msg, int z);
-int msg_wing3       (int n, int msg, int z);
-int msg_wing4       (int n, int msg, int z);
-int msg_stars       (int n, int msg, int z);
-int msg_falling     (int n, int msg, int z);
-int msg_score       (int n, int msg, int z);
-int msg_level1      (int n, int msg, int z);
-int msg_shield      (int n, int msg, int z);
-int msg_laser       (int n, int msg, int z);
-int msg_max         (int n, int msg, int z);
-int msg_mines       (int n, int msg, int z);
-int msg_demo        (int n, int msg, int z);
-int msg_jump1       (int n, int msg, int z);
-int msg_jump2       (int n, int msg, int z);
+int16_t msg_player	     (int16_t n, int16_t msg, int16_t z);
+int16_t msg_killme      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bullet		(int16_t n, int16_t msg, int16_t z);
+int16_t msg_platinum    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bomb        (int16_t n, int16_t msg, int16_t z);
+int16_t msg_missile     (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bullet2     (int16_t n, int16_t msg, int16_t z);
+int16_t msg_spinner     (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy1		(int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy2      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy3      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy4      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy5      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy6      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy7      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy8      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemy9      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemya      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyb      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyc      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyd      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemye      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyf      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyg      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyh      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyi      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyj      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_enemyk      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_ejected     (int16_t n, int16_t msg, int16_t z);
+int16_t msg_explode1    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_explode2    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_explode3    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_explode4    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_explode5    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_explode6    (int16_t n, int16_t msg, int16_t z);
+int16_t msg_triple      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bonus1      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bonus2      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bonus3      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bonus4      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_bonus5      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_wing1       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_wing2       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_wing3       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_wing4       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_stars       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_falling     (int16_t n, int16_t msg, int16_t z);
+int16_t msg_score       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_level1      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_shield      (int16_t n, int16_t msg, int16_t z);
+int16_t msg_laser       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_max         (int16_t n, int16_t msg, int16_t z);
+int16_t msg_mines       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_demo        (int16_t n, int16_t msg, int16_t z);
+int16_t msg_jump1       (int16_t n, int16_t msg, int16_t z);
+int16_t msg_jump2       (int16_t n, int16_t msg, int16_t z);
 
 typedef struct {
 	char *na;					// objects name
-	int xl, yl;				// size in pixels
-	int (*msg)(int n, int msg, int z);
-	int flags;
-	int class;				// is it player, enemy or what?
+	int16_t xl, yl;				// size in pixels
+	int16_t (*msg)(int16_t n, int16_t msg, int16_t z);
+	int16_t flags;
+	int16_t class_;				// is it player, enemy or what?
 	} objinfo_type;
 
 #define class_enemy   1
@@ -213,12 +216,12 @@ typedef struct {
 #define max_objs 64				// total # of objects allowed on screen
 
 typedef struct {
-	int kind;
-	int x, y;
-	int xl, yl;
-	int xd, yd;				// count is for animation sequences
-	int state, flags, class;		// count2 keeps track of updating
-	int count, count2, count3;	// count3 is to track multiple enemy hits
+	int16_t kind;
+	int16_t x, y;
+	int16_t xl, yl;
+	int16_t xd, yd;				// count is for animation sequences
+	int16_t state, flags, class_;		// count2 keeps track of updating
+	int16_t count, count2, count3;	// count3 is to track multiple enemy hits
 	} obj_type;
 
 #define  msg_draw   0
@@ -226,11 +229,11 @@ typedef struct {
 #define  msg_touch  2
 
 typedef struct {
-	unsigned long score;
-	int level;
-	int health;
-	int num_inv;
-	int inv[40];
+	uint32_t score;
+	int16_t level;
+	int16_t health;
+	int16_t num_inv;
+	int16_t inv[40];
 	} pltype;
 
 #define inv_player   0			// number of ships
@@ -246,10 +249,10 @@ extern info_type info[b_maxbkgnd];
 extern objinfo_type objinfo[maxobjkinds];
 extern obj_type objs[max_objs];
 
-extern int num_objs, gameover, statmodflg, pcx_sh, winflg;
+extern int16_t num_objs, gameover, statmodflg, pcx_sh, winflg;
 extern pltype pl;
 extern char botmsg[50];
-extern int text_flg;
+extern int16_t text_flg;
 
 void init_colors (void);
 void init_objinfo (void);
@@ -258,7 +261,7 @@ void init_objs (void);
 void init_inv (void);
 void init_brd (void);			// initialize (set up) the board
 
-void drawcell (int x, int y);		// draw the board element at x, y
+void drawcell (int16_t x, int16_t y);		// draw the board element at x, y
 void drawboard (void);			// draw the entire board
 void edit_brd (void);
 void loadbrd (char *fname);		// loads a board with .BAK extension
@@ -268,19 +271,19 @@ void saveboard (char *fname);		// saves a board with .BRD extension
 void upd_objs (void);
 void upd_objs2 (void);
 void upd_end (void);
-void refresh (int pagemode);
+void refresh (int16_t pagemode);
 
-void addobj (int kind, int x, int y, int xd, int yd);
-void killobj (int n);
+void addobj (int16_t kind, int16_t x, int16_t y, int16_t xd, int16_t yd);
+void killobj (int16_t n);
 void purgeobjs (void);
 void p_new (void);
-void p_hit (int take);
+void p_hit (int16_t take);
 
-void rest (int num);
+void rest (int16_t num);
 void wait (void);
 void wait2 (void);
 void wait4 (void);
-void story (int page);
+void story (int16_t page);
 void menu (void);
 void intro (void);
 void game_end (void);

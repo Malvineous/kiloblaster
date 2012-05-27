@@ -1,62 +1,56 @@
 // MUSIC.C Unified Sound Unit - Sound Blaster + PC Speaker
 
 #include <stdlib.h>
-#include <conio.h>
-#include <dos.h>
-#include <alloc.h>
 #include <string.h>
 #include <fcntl.h>
-#include <io.h>
-#include <mem.h>
-#include "\develop\kilo2\include\config.h"
-#include "\develop\kilo2\include\music.h"
-#include "\develop\kilo2\include\worx.h"
+#include "include/config.h"
+#include "include/music.h"
+#include "include/worx.h"
 
-void soundadd (int priority,char *s);
-void sampadd (int instr,int len,int durfactor,int note);
+void soundadd (int16_t priority,char *s);
+void sampadd (int16_t instr,int16_t len,int16_t durfactor,int16_t note);
 
-void timerset (int numero,int moodi,unsigned int arvo);
+void timerset (int16_t numero,int16_t moodi,uint16_t arvo);
 
 #define memvocs 5
 #define maxvoclen 6144
 char *memvoc;						// Size = memvocs*maxvoclen
 
-int soundoff=1;					// = 1 until set on
-int soundf=1;
-int makesound=0;
-int *myclock=(int*)((long)0x0040006cL);
-int notepriority,samppriority,oldpri;
-int soundcount;
-int SetDSP=0;
-int SetWORX=0;
-int oldfreq;
-int soundptr,soundlen;
+int16_t soundoff=1;					// = 1 until set on
+int16_t soundf=1;
+int16_t makesound=0;
+int16_t notepriority,samppriority,oldpri;
+int16_t soundcount;
+int16_t SetDSP=0;
+int16_t SetWORX=0;
+int16_t oldfreq;
+int16_t soundptr,soundlen;
 
-long vocposn [num_samps];
-int voclen [num_samps];
-int vocrate [num_samps];
+int32_t vocposn [num_samps];
+int16_t voclen [num_samps];
+int16_t vocrate [num_samps];
 char vocnum [num_samps];
 
-long textposn [num_text];
-int textlen [num_text];
-unsigned int vocused [num_samps];
-unsigned int vocuse=0;
+int32_t textposn [num_text];
+int16_t textlen [num_text];
+uint16_t vocused [num_samps];
+uint16_t vocuse=0;
 char *soundmac [num_macs];
 char *textmsg;
-int textmsglen;
+int16_t textmsglen;
 
-unsigned int clockrate,clockcount;
+uint16_t clockrate,clockcount;
 
-int *freq=NULL;
-int *dur=NULL;
+int16_t *freq=NULL;
+int16_t *dur=NULL;
 
-const int headersize=sizeof(vocposn)+sizeof(voclen)+sizeof(vocrate)+
+const int16_t headersize=sizeof(vocposn)+sizeof(voclen)+sizeof(vocrate)+
 	sizeof(textposn)+sizeof(textlen);
 
-int vocflag=1;
-int musicflag=1;
-int vocfilehandle=-1;
-int vocpri;
+int16_t vocflag=1;
+int16_t musicflag=1;
+int16_t vocfilehandle=-1;
+int16_t vocpri;
 char *song = NULL;
 // extern char mirrortab[num_samps];
 
@@ -75,12 +69,12 @@ const char vochdr[0x20]={
 #define numsamples 40
 #define samplen 128
 
-int *SOUNDS;
+int16_t *SOUNDS;
 
 #define samples(x) (SOUNDS+x*samplen)
 #define sampledur(x) (max(1,*(SOUNDS+numsamples*samplen+x)))
 
-const int notetable[144]= {
+const int16_t notetable[144]= {
 	64   ,67   ,71   ,76   ,80   ,85   ,90   ,95   ,101  ,107  ,114  ,121   ,0    ,0    ,0    ,0,
 	128  ,135  ,143  ,152  ,161  ,170  ,181  ,191  ,203  ,215  ,228  ,242   ,0    ,0    ,0    ,0,
 	256  ,271  ,287  ,304  ,322  ,341  ,362  ,383  ,406  ,430  ,456  ,483   ,0    ,0    ,0    ,0,
@@ -92,7 +86,7 @@ const int notetable[144]= {
 	16384,17358,18390,19483,20642,21870,23170,24548,26007,27554,29192,30928 ,0    ,0    ,0    ,0
 	};
 
-extern void rexit (int);
+extern void rexit (int16_t);
 
 extern void interrupt WorxBugInt8 (void);
 
@@ -101,9 +95,9 @@ void interrupt testintr (void) {
 	oldint8();
 	}
 
-void getvoc (int c) {
-	int n,a,lasta;
-	unsigned int lastused;
+void getvoc (int16_t c) {
+	int16_t n,a,lasta;
+	uint16_t lastused;
 	nosound();
 	if ((voclen[c]!=0) && (vocnum[c]==-1)) {
 		// Free an old voc if necessary
@@ -134,7 +128,7 @@ void getvoc (int c) {
 	};
 
 void snd_init (char *voclib) {
-	int i;
+	int16_t i;
 	clockrate=0; clockcount=0;
 	textmsg=NULL;
 
@@ -161,7 +155,7 @@ void snd_init (char *voclib) {
 	read (vocfilehandle,&textlen,sizeof (textlen));
 	};
 
-void snd_play (int priority, int num) {
+void snd_play (int16_t priority, int16_t num) {
 	if (vocflag&&soundf) {
 		if ((!VOCPlaying())||(priority>=oldpri)) {
 //	if (mirrortab[num]) num=mirrortab[num];
@@ -179,8 +173,8 @@ void snd_play (int priority, int num) {
 
 void snd_do (void) {
 	unsigned j;
-	int c;
-	int soundhandle;
+	int16_t c;
+	int16_t soundhandle;
 	nosound();
 
 	if (nosnd||musicflag||vocflag) clockrate=0;
@@ -231,7 +225,7 @@ void snd_do (void) {
 		};
 	};
 
-void text_get (int n) {
+void text_get (int16_t n) {
 	textmsg=NULL;
 
 	if (textlen[n]!=0) {
@@ -245,7 +239,7 @@ void text_get (int n) {
 	};
 
 void snd_exit (void) {
-	int c;
+	int16_t c;
 	timerset (0,2,0);
 	nosound();
 
@@ -263,14 +257,14 @@ void snd_exit (void) {
 
 // void sb_update (void) {};			// WORX handles looping. Not needed.
 
-int sb_playing (void) {
+int16_t sb_playing (void) {
 	return (1);
 	};
 
 void sb_shutup (void) {
 	if (musicflag) {
 		StopSequence();
-		free(song);
+//PORT		free(song);
 		song=NULL;
 		};
 	};
@@ -285,10 +279,10 @@ void sb_playtune (char *filename) {
 		};
 	};
 
-void sampadd1 (int instr, int len, int durfactor, int note) {
-	int c;
-	long tempfreq,sampfreq,playfreq;
-	int *s;
+void sampadd1 (int16_t instr, int16_t len, int16_t durfactor, int16_t note) {
+	int16_t c;
+	int32_t tempfreq,sampfreq,playfreq;
+	int16_t *s;
 
 	// printf (" %i-%i",instr,sampledur(instr));
 	s=samples(instr);
@@ -307,12 +301,12 @@ void sampadd1 (int instr, int len, int durfactor, int note) {
 		} while ((c<len)&&(soundlen<maxsndlen));
 	};
 
-void soundadd1 (int priority, char *s) {
-	int c;
-	int note;
-	int instr=-1;
-	int notedur;
-	int restdur;
+void soundadd1 (int16_t priority, char *s) {
+	int16_t c;
+	int16_t note;
+	int16_t instr=-1;
+	int16_t notedur;
+	int16_t restdur;
 
 	if (soundoff) {return;};
 	if ((!makesound)||((priority>=notepriority)&&(notepriority!=-1))||
@@ -358,16 +352,16 @@ void soundstop (void) {
 	nosound();
 	};
 
-void timerset (int numero, int moodi, unsigned int arvo) {
+void timerset (int16_t numero, int16_t moodi, uint16_t arvo) {
 	outportb (0x43,64*numero+48+2*moodi+0);
 	outportb (0x40+numero, arvo);
 	outportb (0x40+numero, arvo>>8);
 	};
 
-void sampadd (int instr, int len, int durfactor, int note) {
-	int *s;
-	int c;
-	long tempfreq,sampfreq,playfreq;
+void sampadd (int16_t instr, int16_t len, int16_t durfactor, int16_t note) {
+	int16_t *s;
+	int16_t c;
+	int32_t tempfreq,sampfreq,playfreq;
 
 	s=samples(instr);
 	if (soundoff) {return;};
@@ -385,12 +379,12 @@ void sampadd (int instr, int len, int durfactor, int note) {
 		} while ((c<len)&&(soundlen<maxsndlen));
 	};
 
-void soundadd2 (int priority, char *s) {
-	int c;
-	int note;
-	int instr=-1;
-	int notedur;
-	int restdur;
+void soundadd2 (int16_t priority, char *s) {
+	int16_t c;
+	int16_t note;
+	int16_t instr=-1;
+	int16_t notedur;
+	int16_t restdur;
 
 	if (soundoff) {return;};
 	if ((!makesound)||((priority>=notepriority)&&(notepriority!=-1))||
@@ -430,12 +424,12 @@ void soundadd2 (int priority, char *s) {
 		};
 	};
 
-void soundadd (int priority, char *s) {
-	int c;
-	int note;
-	int instr=-1;
-	int notedur;
-	int restdur;
+void soundadd (int16_t priority, char *s) {
+	int16_t c;
+	int16_t note;
+	int16_t instr=-1;
+	int16_t notedur;
+	int16_t restdur;
 
 	if (soundoff) {return;};
 	if ((!makesound)||((priority>=notepriority)&&(notepriority!=-1))||

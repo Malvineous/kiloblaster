@@ -9,54 +9,52 @@ unsigned _stklen=8192;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dos.h>
-#include <conio.h>
 #include <fcntl.h>			// for savegame and loadgame
 #include <ctype.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\uncrunch.h"
-#include "\develop\kilo2\include\config.h"
-#include "\develop\kilo2\include\music.h"
-#include "\develop\kilo2\include\2blaster.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/uncrunch.h"
+#include "include/config.h"
+#include "include/music.h"
+#include "include/2blaster.h"
 
 vptype gamevp, cmdvp, statvp, textvp;
-int board[end_x][end_y];
-int modflg[end_x][end_y];
-int gamecount, cnt_down;
-int fire_cnt, weapon_cnt;
-int wing1_x, wing1_y, wing2_x, wing2_y;
-int wing3_x, wing3_y, wing4_x, wing4_y;
-int star_flag, x_pnt, y_pnt, x_pnt2, y_pnt2, x_pnt3, y_pnt3;
-int bonus_flg1, bonus_flg2, bonus_flg3;
-int enemy_cnt, enemy_max, enemy_flag;
-unsigned long points, extra_ship;
-extern int vocflag;
+int16_t board[end_x][end_y];
+int16_t modflg[end_x][end_y];
+int16_t gamecount, cnt_down;
+int16_t fire_cnt, weapon_cnt;
+int16_t wing1_x, wing1_y, wing2_x, wing2_y;
+int16_t wing3_x, wing3_y, wing4_x, wing4_y;
+int16_t star_flag, x_pnt, y_pnt, x_pnt2, y_pnt2, x_pnt3, y_pnt3;
+int16_t bonus_flg1, bonus_flg2, bonus_flg3;
+int16_t enemy_cnt, enemy_max, enemy_flag;
+uint32_t points, extra_ship;
+extern int16_t vocflag;
 wintype menu_win;
 
 info_type info[b_maxbkgnd];
 objinfo_type objinfo[maxobjkinds];
 obj_type objs[max_objs];
 
-int num_objs, gameover, statmodflg, pcx_sh, winflg;
+int16_t num_objs, gameover, statmodflg, pcx_sh, winflg;
 pltype pl;
 char botmsg [50];
 extern char k_msg2[];
-int text_flg;
+int16_t text_flg;
 
 char hiname [hilen][numhighs];
 char savename [numsaves][savelen];
-unsigned long hiscore [numhighs];
+uint32_t hiscore [numhighs];
 char mirrortab[num_samps]=mirrortabd;
 
-//int debug=0;
-//int swrite=0;
-void rexit (int n);
-int askquit (void);
+//int16_t debug=0;
+//int16_t swrite=0;
+void rexit (int16_t n);
+int16_t askquit (void);
 
-unsigned long o_extra;
+uint32_t o_extra;
 pltype o_pl;
 
 extern char demolvl[3];
@@ -78,7 +76,7 @@ void init_colors (void) {
 	};
 
 void init_win (void) {
-	int x,y;
+	int16_t x,y;
 	gamevp.vpx=0; gamevp.vpy=0;
 	gamevp.vpox=0; gamevp.vpoy=0;
 	gamevp.vpxl=256; gamevp.vpyl=192;
@@ -139,7 +137,7 @@ void init_win (void) {
 	};
 
 void init_brd (void) {
-	int x, y;
+	int16_t x, y;
 	clrvp (&gamevp, 0);
 	for (x = 0; x < end_x; x++) {
 		for (y = 0; y < end_y; y++) {
@@ -150,12 +148,12 @@ void init_brd (void) {
 	};
 
 void drawboard (void) {
-	int x, y;
+	int16_t x, y;
 	statmodflg = 0;
 	refresh (0);
 	};
 
-void drawcell (int x, int y) {
+void drawcell (int16_t x, int16_t y) {
 	if (board[x][y]==0) {
 		drawshape (&gamevp, pcx_sh + x + y * 16, x * 16, y * 16);
 		}
@@ -165,7 +163,7 @@ void drawcell (int x, int y) {
 	};
 
 void moddrawboard (void) {
-	int x, y;
+	int16_t x, y;
 	for (x = 0; x < end_x; x++)
 		for (y = 0; y < end_y; y++)
 			modboard(x, y);
@@ -173,7 +171,7 @@ void moddrawboard (void) {
 	};
 
 void loadboard (char *fname) {		// loads a board with .BRD extension
-	int boardfile;
+	int16_t boardfile;
 	char dest[12];
 	char *src1 = ext;
 	strcpy(dest, fname);
@@ -184,15 +182,15 @@ void loadboard (char *fname) {		// loads a board with .BRD extension
 	};
 
 void saveboard (char *fname) {		// saves a board with .BRD extension
-	int boardfile;
+	int16_t boardfile;
 	char dest[12];	char dest2[12];
 	char *src1 = ext; char *src2 = ".bak";
 	strcpy(dest, fname); strcat(dest, src1);
 	strcpy(dest2, fname); strcat(dest2, src2);
-	boardfile = creatnew (dest, 0);
+	boardfile = _creat (dest, 0644);
 	if (boardfile== -1) {
 		rename (dest, dest2);
-		boardfile = _creat (dest, 0);
+		boardfile = _creat (dest, 0644);
 		if (!write (boardfile, &board, sizeof(board))) rexit(5);
 		}
 	else {
@@ -202,7 +200,7 @@ void saveboard (char *fname) {		// saves a board with .BRD extension
 	};
 
 void loadcfg (void) {
-	int cfgfile, c;
+	int16_t cfgfile, c;
 	cfgfile=_open (cfgfname,O_BINARY);
 	if ((cfgfile < 0) || (filelength(cfgfile) <= 0)) {
 		for (c = 0; c < numhighs; c++) {hiname[c][0]='\0'; hiscore[c]=0;};
@@ -219,8 +217,8 @@ void loadcfg (void) {
 	};
 
 void savecfg (void) {
-	int cfgfile;
-	cfgfile=_creat (cfgfname,0);
+	int16_t cfgfile;
+	cfgfile=_creat (cfgfname,0644);
 	if (cfgfile >= 0) {
 		write (cfgfile, &hiname, sizeof(hiname));
 		write (cfgfile, &hiscore, sizeof(hiscore));
@@ -230,7 +228,7 @@ void savecfg (void) {
 	close (cfgfile);
 	};
 
-void text (char *msg, int flg) {
+void text (const char *msg, int16_t flg) {
 	strcpy (botmsg, msg);
 	if (!flg) cnt_down=100;
 	text_flg=flg;
@@ -238,7 +236,7 @@ void text (char *msg, int flg) {
 	};
 
 void stat_win (void) {
-	int x;
+	int16_t x;
 	char tempstr[12];
 
 	fontcolor (&cmdvp,14,0);
@@ -298,8 +296,8 @@ void cmd_win (void) {
 	stat_win ();
 	};
 
-void printhi (int newhi) {
-	int c, posn;
+void printhi (int16_t newhi) {
+	int16_t c, posn;
 	char s[10];
 	defwin (&menu_win, 7, 40, 8, 6, 0, 0, textbox);	// 128x96
 	drawwin (&menu_win);
@@ -340,8 +338,8 @@ void printhi (int newhi) {
 	if (newhi==0) rest (1);
 	};
 
-void instructions (int page) {
-	int x, y;
+void instructions (int16_t page) {
+	int16_t x, y;
 	char tempstr[2];
 	wprint (&statvp, 20, 22, 1, itoa (page, tempstr, 10));
 	switch (page) {
@@ -401,8 +399,8 @@ void instructions (int page) {
 		};
 	};
 
-void order (int page) {
-	int x, y;
+void order (int16_t page) {
+	int16_t x, y;
 	char tempstr[2];
 	wprint (&statvp, 20, 22, 1, itoa (page, tempstr, 10));
 
@@ -464,8 +462,8 @@ void order (int page) {
 		};
 	};
 
-void about (int page) {
-	int x, y;
+void about (int16_t page) {
+	int16_t x, y;
 	char tempstr[2];
 	wprint (&statvp, 20, 22, 1, itoa (page, tempstr, 10));
 	switch (page) {
@@ -575,8 +573,8 @@ void about (int page) {
 		};
 	};
 
-void credit (int page) {
-	int x, y;
+void credit (int16_t page) {
+	int16_t x, y;
 	char tempstr[2];
 	wprint (&statvp, 20, 22, 1, itoa (page, tempstr, 10));
 	switch (page) {
@@ -666,7 +664,7 @@ void cheat_msg (void) {
 		wprint (&menu_win.inside, 11, 80, 2, "   - Press any key -   ");
 	};
 
-int askquit (void) {
+int16_t askquit (void) {
 	defwin (&menu_win, 4, 72, 11, 2, 0, 0, textbox);
 	drawwin (&menu_win);
 	snd_play (1,19);
@@ -677,7 +675,7 @@ int askquit (void) {
 	return (key);
 	};
 
-void rest (int num) {
+void rest (int16_t num) {
 	switch (num) {
 		case 1:
 			do {checkctrl0 (0);}	while (key != escape); break;
@@ -725,9 +723,9 @@ void music (void) {
 		};
 	};
 
-int loadsavewin (char *msg, char *blankmsg) {
-	static int cur = 0;
-	int c;
+int16_t loadsavewin (char *msg, char *blankmsg) {
+	static int16_t cur = 0;
+	int16_t c;
 	char s[12]; char tempstr[2];
 	dx1hold = 1; dy1hold = 1; fire1off = 1;
 	defwin (&menu_win, 9, 32, 6, 7, 0, 0, textbox);	// 96x112
@@ -767,8 +765,8 @@ int loadsavewin (char *msg, char *blankmsg) {
 	return (cur);
 	};
 
-int loadgame (void) {
-	int num, gamefile, c;
+int16_t loadgame (void) {
+	int16_t num, gamefile, c;
 	char tempstr[16];
 	char boardname[32];
 
@@ -794,7 +792,7 @@ int loadgame (void) {
 	};
 
 void savegame (void) {
-	int num, gamefile;
+	int16_t num, gamefile;
 	char s[savelen];
 	char tempstr[16];
 	char boardname[32];
@@ -812,7 +810,7 @@ void savegame (void) {
 			strcpy (boardname, gamename);
 			strcat (boardname, ".");
 			strcat (boardname, tempstr);
-			gamefile = _creat (boardname, 0);
+			gamefile = _creat (boardname, 0644);
 			if (gamefile >= 0) {
 				write (gamefile, &o_pl, sizeof(o_pl));
 				write (gamefile, &o_extra, sizeof(o_extra));
@@ -833,9 +831,9 @@ void n_stats (void) {
 	extra_ship = o_extra;
 	};
 
-void play (demoflg, loadflg) {
-	int n, t, begclock, temppage;
-	int speed = 0; int turtle = 0;
+void play (int16_t demoflg, int16_t loadflg) {
+	int16_t n, t, begclock, temppage;
+	int16_t speed = 0; int16_t turtle = 0;
 	if (loadflg) {
 		n_stats ();
 		statmodflg |= mod_screen;
@@ -852,7 +850,7 @@ void play (demoflg, loadflg) {
 	gameover = 0; gamecount = 0; winflg = 0;
 
 	  do	{
-		begclock = *myclock;
+		begclock = getclock();
 		gamecount++;
 		checkctrl (1);  // 0 for standard repeat, 1 to check key hold
 		switch (toupper (key)) {
@@ -978,16 +976,16 @@ void play (demoflg, loadflg) {
 			if (cnt_down > 0) cnt_down--;
 			if ((cnt_down==0) && (text_flg==0)) text (k_msg2,1);
 			if ((demoflg) && (!macplay)) gameover = 1;
-		while ((*myclock-begclock) < (turtle+1)) continue;
+		while ((getclock()-begclock) < (turtle+1)) continue;
 	} while (!gameover);
 	if ((!winflg) && (!demoflg)) {
-		text ((char*)end_msg[random(5)],0); refresh (pagemode);
+		text ((char*)end_msg[xr_random(5)],0); refresh (pagemode);
 		setpagemode (0); printhi (1);
 		};
 	};
 
-void main (int argc, char *argv[]) {
-	int n;
+int main (int argc, char *argv[]) {
+	int16_t n;
 	strcpy (tempname,"temp");
 	loadcfg ();
 	scrn_1 ();					// beginning screen
@@ -1033,7 +1031,7 @@ void main (int argc, char *argv[]) {
 	shm_want [23]=1;
 	shm_want [24]=1;
 
-	intro ();
+//TEMP	intro ();
 
 	init_objinfo ();
 	init_info ();
@@ -1053,7 +1051,7 @@ void main (int argc, char *argv[]) {
 	snd_exit();
 	}
 
-void rexit (int n) {
+void rexit (int16_t n) {
 	char errnum[2];
 
 	shm_exit();

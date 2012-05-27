@@ -1,1 +1,1 @@
-void pixwrite (int n);
+void pixwrite (int16_t n);

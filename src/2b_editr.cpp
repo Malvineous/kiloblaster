@@ -7,23 +7,21 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <dos.h>
 #include <fcntl.h>
-#include <io.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\config.h"
-#include "\develop\kilo2\include\2blaster.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/config.h"
+#include "include/2blaster.h"
 
-int x, y, cell;
+int16_t x, y, cell;
 extern char cfgfname[];
 extern char ext[];
 
 void fill_brd (void);
 
-void infname (char *msg, char *fname, int num) {
+void infname (char *msg, char *fname, int16_t num) {
 	fontcolor (&statvp, 10, 0);
 	clearvp (&statvp);
 	wprint (&statvp, 2, 2, 1, msg);
@@ -33,8 +31,8 @@ void infname (char *msg, char *fname, int num) {
 	};
 
 void edit_brd (void) {
-	int tempint;
-	int lastcell = b_blank;	// last placed item on the board
+	int16_t tempint;
+	int16_t lastcell = b_blank;	// last placed item on the board
 	char tempstr[12];		// temporary string, used for input
 	char tempfname[12];
 	tempstr[0] = '\0';
@@ -132,7 +130,7 @@ void edit_brd (void) {
 
 /*
 void init_brd (void) {
-	int x, y;
+	int16_t x, y;
 	clrvp (&gamevp, 0);
 	for (x = 0; x < end_x; x++) {
 		for (y = 0; y < end_y; y++) {
@@ -145,12 +143,12 @@ void init_brd (void) {
 
 /*
 void drawboard (void) {
-	int x, y;
+	int16_t x, y;
 	statmodflg = 0;
 	refresh (0);
 	};
 
-void drawcell (int x, int y) {
+void drawcell (int16_t x, int16_t y) {
 	if (board[x][y]==0) {
 		drawshape (&gamevp, pcx_sh + x + y * 16, x * 16, y * 16);
 		}
@@ -184,7 +182,7 @@ void fill_brd () {
 	};
 
 void loadbrd (char *fname) {			// loads a board with .BAK extension
-	int boardfile;
+	int16_t boardfile;
 	char dest[12];
 	char *src1 = ".bak";
 	strcpy(dest, fname);
@@ -196,7 +194,7 @@ void loadbrd (char *fname) {			// loads a board with .BAK extension
 
 /*
 void loadboard (char *fname) {		// loads a board with .BRD extension
-	int boardfile;
+	int16_t boardfile;
 	char dest[12];
 	char *src1 = ext;
 	strcpy(dest, fname);
@@ -207,7 +205,7 @@ void loadboard (char *fname) {		// loads a board with .BRD extension
 	};
 
 void saveboard (char *fname) {		// saves a board with .BRD extension
-	int boardfile;
+	int16_t boardfile;
 	char dest[12];	char dest2[12];
 	char *src1 = ext; char *src2 = ".bak";
 	strcpy(dest, fname); strcat(dest, src1);
@@ -225,7 +223,7 @@ void saveboard (char *fname) {		// saves a board with .BRD extension
 	};
 
 void loadcfg (void) {
-	int cfgfile, c;
+	int16_t cfgfile, c;
 	char ourname[64];
 //	strcpy (ourname, path);
 	strcpy (ourname, cfgfname);
@@ -245,7 +243,7 @@ void loadcfg (void) {
 	};
 
 void savecfg (void) {
-	int cfgfile;
+	int16_t cfgfile;
 	char ourname[64];
 //	strcpy (ourname, path);
 	strcpy (ourname, cfgfname);

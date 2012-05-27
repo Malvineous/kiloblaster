@@ -1,16 +1,14 @@
 //	Windows.C: Window controller
 
-#include <dos.h>;
-#include <string.h>;
-#include "\develop\kilo2\include\gr.h";
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h";
+#include <string.h>
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
 
 char cursorchar;
-int  curhi, curlo, curback;					// current color scheme
-extern int *myclock;
+int16_t  curhi, curlo, curback;					// current color scheme
 
-void defwin (wintype *win,int x8,int y,int xl16,int yl16,int h16,int v16,int flags) {
+void defwin (wintype *win,int16_t x8,int16_t y,int16_t xl16,int16_t yl16,int16_t h16,int16_t v16,int16_t flags) {
 	win->winflags=flags;
 
 	initvp (&(win->border),248);
@@ -51,7 +49,7 @@ void defwin (wintype *win,int x8,int y,int xl16,int yl16,int h16,int v16,int fla
 	};
 
 void drawwin (wintype *win) {
-	int c,d;
+	int16_t c,d;
 		// 1. Clear border vp;
 		// 2. Draw border characters,  etc.
 
@@ -137,9 +135,9 @@ void undrawwin (wintype *win) {
 	clearvp (&(win->border));
 	};
 
-void wprint (vptype *vp, int x, int y, int font, char *text) {
-	int fontx;
-	int c;
+void wprint (vptype *vp, int16_t x, int16_t y, int16_t font, char *text) {
+	int16_t fontx;
+	int16_t c;
 
 	if ((curhi!=vp->vphi)||(curback!=vp->vpback)) {
 		fontcolor (vp, vp->vphi, vp->vpback);
@@ -158,14 +156,14 @@ void wprint (vptype *vp, int x, int y, int font, char *text) {
 		};
 	};
 
-int wgetkey (vptype *vp, int x, int y, int font) {
+int16_t wgetkey (vptype *vp, int16_t x, int16_t y, int16_t font) {
 	char tempstr[2];
-	int oldclock;
+	int16_t oldclock;
 	tempstr [1]=0;
 
 	while (!k_pressed()) {
-		oldclock=*myclock;
-		do {} while (oldclock==*myclock);
+		oldclock=getclock();
+		do {} while (oldclock==getclock());
 		cursorchar=(cursorchar&7)+1;
 		tempstr[0]=cursorchar;
 		wprint (vp,x,y,font,tempstr);
@@ -174,12 +172,12 @@ int wgetkey (vptype *vp, int x, int y, int font) {
 	return (k_read());
 	};
 
-void winput (vptype *vp, int x, int y, int font, char *text, int maxlen) {
-	int key;
-	int fontx;
-	int templen;
+void winput (vptype *vp, int16_t x, int16_t y, int16_t font, char *text, int16_t maxlen) {
+	int16_t key;
+	int16_t fontx;
+	int16_t templen;
 	char tempstr[2];
-	int firstflag=1;
+	int16_t firstflag=1;
 
 	switch (font) {
 		case 1: fontx=8; break;			// 8x8
@@ -214,14 +212,14 @@ void winput (vptype *vp, int x, int y, int font, char *text, int maxlen) {
 		} while ((key!=enter)&&(key!=escape));
 	};
 
-void titlewin (wintype *win, char *text, int flg) {
+void titlewin (wintype *win, char *text, int16_t flg) {
 	if (flg==0) wprint (&win->border,16+(win->winxl+win->winh)/2-
 		4*strlen(text),4,1,text);
 	else wprint (&win->border,16+(win->winxl+win->winh)/2-
 		4*strlen(text)-32,4,1,text);
 	};
 
-void initvp (vptype *vp, int bkgnd) {
+void initvp (vptype *vp, int16_t bkgnd) {
 	vp->vpox=0;
 	vp->vpoy=0;
 	vp->vphi=1;
@@ -232,9 +230,9 @@ void clearvp (vptype *vp) {
 	clrvp (vp, vp->vpback);
 	};
 
-void fontcolor (vptype *vp, int hi, int back) {
-//	const int hitab[8]={39,9,119,144,160,134,161,15};
-//	const int hitab[8]={39,9,10,11,12,134,71,15};			// original
+void fontcolor (vptype *vp, int16_t hi, int16_t back) {
+//	const int16_t hitab[8]={39,9,119,144,160,134,161,15};
+//	const int16_t hitab[8]={39,9,10,11,12,134,71,15};			// original
 
 //	if (hi<8) hi=hitab[hi];
 	if (back==0) back=248;

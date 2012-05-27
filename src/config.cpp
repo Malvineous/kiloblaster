@@ -5,30 +5,32 @@
 //		17819 (386-16)
 //		36392 (386-33)
 
-#include <alloc.h>
-#include <conio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\music.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/gamectrl.h"
+#include "include/music.h"
+#include "include/config.h"
 
-int nosnd=0;
-//int cfgdemo=0;
+int16_t nosnd=0;
+//int16_t cfgdemo=0;
 
+/*
 struct {
-	int firstthru;				// Are we set up?
-	int joyflag0,joyxl0, joyxc0, joyxr0, joyyu0, joyyc0, joyyd0;
-	int x_ourmode0;
-	int musicflag0;
-	int vocflag0;
+	int16_t firstthru;				// Are we set up?
+	int16_t joyflag0,joyxl0, joyxc0, joyxr0, joyyu0, joyyc0, joyyd0;
+	int16_t x_ourmode0;
+	int16_t musicflag0;
+	int16_t vocflag0;
 	char pad [64];
 	} cf;
+*/
+struct cf_t cf;
 
-void cfg_init(int argc, char *argv[]) {
-	int c;
+void cfg_init(int16_t argc, char *argv[]) {
+	int16_t c;
 	char s[16];
 
 	clrscr();
@@ -61,8 +63,9 @@ void cfg_init(int argc, char *argv[]) {
 		};
 	};
 
-int doconfig (void) {
-	int redo;
+int16_t doconfig (void) {
+/*
+	int16_t redo;
 	char tempstr[16];
 
 	redo=cf.firstthru;
@@ -167,5 +170,9 @@ int doconfig (void) {
 	cf.joyyu0=joyyu; cf.joyyc0=joyyc; cf.joyyd0=joyyd;
 	cf.x_ourmode0=x_ourmode;
 	vocflag=cf.vocflag0; musicflag=cf.musicflag0;
+*/
+	joyflag=false;
+	vocflag=true;
+	musicflag=true;
 	return 1;
 	};

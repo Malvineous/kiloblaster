@@ -1,12 +1,9 @@
 // GRAPHICS.C: Graphics Driver Controller
 
-#include <stdlib.h>;
-#include <dos.h>;
-#include <conio.h>;
-#include <mem.h>;
-#include <ctype.h>;
-#include "\develop\kilo2\include\gr.h";
-#include "\develop\kilo2\include\keyboard.h";
+#include <stdlib.h>
+#include <ctype.h>
+#include "include/gr.h"
+#include "include/keyboard.h"
 
 #define Red 0
 #define Green 1
@@ -21,22 +18,22 @@ vptype mainvp;
 //		2: Erase shape
 //		3: Underlay shape
 
-unsigned int cmtab [4][256];
+uint16_t cmtab [4][256];
 //	CGA: Color (lo) & Mask (hi) table 0 shape 1 font 2 erase shape
 //	VGA: Color (lo)/0=Mask
 //	EGA: Color (0-15) or 16=Mask Out
 
-int pixelsperbyte;
-int origmode;
-int pagemode, pageshow, pagedraw;
-int showofs, drawofs, pagelen;
+int16_t pixelsperbyte;
+int16_t origmode;
+int16_t pagemode, pageshow, pagedraw;
+int16_t showofs, drawofs, pagelen;
 
 void *LOST;
 
-extern void plot_cga (int x, int y, byte color);
-extern void plot_ega (int x, int y, byte color);
-extern void plot_vga (int x, int y, byte color);
-extern void line_cga (int x0, int y0, int x1, int y1, byte color);
+extern void plot_cga (int16_t x, int16_t y, byte color);
+extern void plot_ega (int16_t x, int16_t y, byte color);
+extern void plot_vga (int16_t x, int16_t y, byte color);
+extern void line_cga (int16_t x0, int16_t y0, int16_t x1, int16_t y1, byte color);
 
 p_rec vgapal={
 0,0,0,0,0,42,0,36,0,18,41,52,
@@ -108,37 +105,37 @@ p_rec vgapal={
 37,52,63,50,52,63,63,52,63,12,63,63,
 25,63,63,37,63,63,50,63,63,63,63,63};
 
-const int DacWrite=0x3C8;
-const int DacRead=0x3C7;
-const int DacData=0x3C9;
-const int input_status_1=0x3DA;
-const int vbi_mask=0x8;
+const int16_t DacWrite=0x3C8;
+const int16_t DacRead=0x3C7;
+const int16_t DacData=0x3C9;
+const int16_t input_status_1=0x3DA;
+const int16_t vbi_mask=0x8;
 
 char pixvalue;
 
-void pixaddr_cga (int x,int y,char **vidbuf,unsigned char *bitc) {
+void pixaddr_cga (int16_t x,int16_t y,char **vidbuf,unsigned char *bitc) {
 //   *vidbuf = (void*) (0xb8000000 + (x/4) + 0x2000*(y&1) + 0x50*(y/2));
 //   *bitc = (x&3)*2;
 };
 
-void pixaddr_ega (int x,int y,char **vidbuf,unsigned char *bitc) {
+void pixaddr_ega (int16_t x,int16_t y,char **vidbuf,unsigned char *bitc) {
 //   *vidbuf = (void*) (0xa0000000 + y*40 + x/8 + drawofs);
 //   *bitc = (x&7);
 };
 
-void pixaddr_vga (int x,int y,char **vidbuf,unsigned char *bitc) {
+void pixaddr_vga (int16_t x,int16_t y,char **vidbuf,unsigned char *bitc) {
 	*vidbuf=(void*) (0xa0000000+drawofs+(80*y)+(x>>2));
 	*bitc=(x&3);
 	};
 
 //		n<0 = erase
-void drawshape (vptype *vp, int n, int x, int y) {
+void drawshape (vptype *vp, int16_t n, int16_t x, int16_t y) {
 	char far *tblptr;
 	char *shapeptr;
 	byte xlb, yl;
-	int colortbl;
-	int ns=(n&0xff);
-	int nt=(n>>8);
+	int16_t colortbl;
+	int16_t ns=(n&0xff);
+	int16_t nt=(n>>8);
 
 	if (nt&0x40) {colortbl=3; nt^=0x40;}
 	else {colortbl=shm_flags[nt]&shm_fontf;};
@@ -149,7 +146,8 @@ void drawshape (vptype *vp, int n, int x, int y) {
 		};
 	if (shm_tbladdr[nt]!=LOST) {
 		tblptr=(shm_tbladdr [nt])+(ns*4);
-		shapeptr=shm_tbladdr [nt]+*(int*) tblptr;
+		//shapeptr=shm_tbladdr [nt]+*(int*) tblptr;
+		shapeptr=shm_tbladdr [nt]+*(uint16_t*) tblptr;
 		xlb=(char) *(tblptr+2); yl=(char) *(tblptr+3);
 		x-=vp->vpox; y-=vp->vpoy;
 		if ((y<vp->vpyl)&&((y+yl)>=0)&&
@@ -161,17 +159,18 @@ void drawshape (vptype *vp, int n, int x, int y) {
 
 //	Plot:  Need to adjust color for proper video mode
 
-void plot (vptype *vp, int x, int y, int color) {
+void plot (vptype *vp, int16_t x, int16_t y, int16_t color) {
 	if ((x>=0) && (y>=0) && (x<vp->vpxl) && (y<vp->vpyl)) {
 		plot_vga (x+vp->vpx,y+vp->vpy,(char) color);
 		};
 	};
 
 void waitsafe (void) {
+return;
 	do {} while (!(inportb(0x3da)&8));
 	};
 
-void fontcolor_vga (int hi, int lo, int back) {
+void fontcolor_vga (int16_t hi, int16_t lo, int16_t back) {
 	cmtab [1][0]=255;
 	cmtab [1][1]=lo;
 	cmtab [1][2]=hi;
@@ -179,12 +178,12 @@ void fontcolor_vga (int hi, int lo, int back) {
 	else {cmtab [1][3]=back;}
 	};
 
-void fntcolor (int hi, int lo, int back) {
+void fntcolor (int16_t hi, int16_t lo, int16_t back) {
 	fontcolor_vga (lo, hi, back);
 	};
 
 void initcolortabs_vga (void) {
-	int c;
+	int16_t c;
 	for (c=0; c<256; c++) {
 		cmtab[0][c]=c;
 		cmtab[2][c]=0;
@@ -199,7 +198,7 @@ void setpages (void) {
 	drawofs=pagedraw*pagelen;
 	};
 
-void setpagemode (int mode) {
+void setpagemode (int16_t mode) {
 	if (mode) {
 		pagemode=1;
 		pagedraw=1-pageshow;
@@ -213,12 +212,14 @@ void setpagemode (int mode) {
 		};
 	};
 
-int getportnum (void) {
-	return (*(int*)(0x00400063));
+int16_t getportnum (void) {
+	return (*(int16_t*)(0x00400063));
 	};
 
 void pageflip (void) {
-	int portnum;
+	SDL_Flip(::screen);
+return;
+	int16_t portnum;
 	pageshow=!pageshow;
 	pagedraw=!pagedraw;
 
@@ -236,18 +237,21 @@ void wait_vbi(void) {
 	};
 
 void vga_setpal(void) {
-	int start=15;
-	int number=241;
-	unsigned int i;
+	int16_t start=15;
+	int16_t number=241;
+	uint16_t i;
 
 	if ((start>256)||(start<15)||((start+number)>256)) return;
 	waitsafe();
-	for (i=start;i<(start+number);i++) {
-		outportb(DacWrite,i);
-		outportb(DacData,vgapal[i*3+Red]);
-		outportb(DacData,vgapal[i*3+Green]);
-		outportb(DacData,vgapal[i*3+Blue]);
+	SDL_Color clr[256];
+	for (i=0;i<number-start;i++) {
+		clr[i].r = pal6to8(vgapal[(start+i)*3+Red  ]);
+		clr[i].g = pal6to8(vgapal[(start+i)*3+Green]);
+		clr[i].b = pal6to8(vgapal[(start+i)*3+Blue ]);
 		};
+
+	SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, clr, start, number);
+
 	setcolor (1,0,0,42); setcolor (2,0,36,0); setcolor (3,18,41,52);
 	setcolor (4,48,0,0); setcolor (5,23,13,33); setcolor (6,28,16,4);
 	setcolor (7,32,36,40); setcolor (8,12,12,12); setcolor (9,10,30,63);
@@ -256,9 +260,9 @@ void vga_setpal(void) {
 	};
 
 void readpal(p_rec palette) {
-	int start=0;
-	int number=256;
-	unsigned int i;
+	int16_t start=0;
+	int16_t number=256;
+	uint16_t i;
 
 	if ((start>256)|(start<0)|((start+number)>256)) return;
 	for (i=start;i<(start+number);i++) {
@@ -270,59 +274,57 @@ void readpal(p_rec palette) {
 	};
 
 void clrpal(void) {
-	unsigned int i;
-	int start=0;
-	int number=256;
-	if ((start>256)|(start<0)|((start+number)>256)) return;
-	for (i=start;i<(start+number);i++) {
-		outportb(DacWrite,i);
-		outportb(DacData,0);
-		outportb(DacData,0);
-		outportb(DacData,0);
-		};
+	SDL_Color clr[256];
+	memset(clr, 0, sizeof(clr));
+	SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, clr, 0, 256);
 	};
 
 void fadein(void) {
-	p_rec currentpal;
-	int temp, i, cycle;
+	//p_rec currentpal;
+	SDL_Color currentpal[256];
+	int16_t temp, i, cycle;
 
 	for (cycle=0;cycle<64;cycle+=2) {
-		for (i=0;i<(256*3);i++){
-			temp=vgapal[i];
-			temp=(temp*cycle)>>6;
-			currentpal[i]=temp;
+		for (i=0;i<256;i++){
+			currentpal[i].r = (pal6to8(vgapal[i*3+Red  ]) * cycle) >> 6;
+			currentpal[i].g = (pal6to8(vgapal[i*3+Green]) * cycle) >> 6;
+			currentpal[i].b = (pal6to8(vgapal[i*3+Blue ]) * cycle) >> 6;
 			};
 		waitsafe();
-		outportb(DacWrite,0);
-		for (i=0;i<(256*3);i++) outportb(DacData,currentpal[i]);
+		SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, currentpal, 0, 256);
+		SDL_Flip(::screen);
+		usleep(750/64*1000);
 		};
 	};
 
-void setcolor (int c, int n1, int n2, int n3) {
-	outportb (DacWrite,c);
-	outportb (DacData, n1);
-	outportb (DacData, n2);
-	outportb (DacData, n3);
+void setcolor (int16_t c, int16_t n1, int16_t n2, int16_t n3) {
+	SDL_Color n;
+	n.r = pal6to8(n1);
+	n.g = pal6to8(n2);
+	n.b = pal6to8(n3);
+	SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, &n, c, 1);
+	SDL_Flip(::screen);
 	};
 
 void fadeout(void) {
-	p_rec currentpal;
-	int i, temp, cycle;
+	SDL_Color currentpal[256];
+	int16_t i, temp, cycle;
 
 	for (cycle=63;cycle>=0;cycle-=2) {
-		for (i=0;i<256*3;i++){
-			temp=vgapal[i];
-			temp=(temp*cycle)>>6;
-			currentpal[i]=temp;
+		for (i=0;i<256;i++){
+			currentpal[i].r = (pal6to8(vgapal[i*3+Red  ]) * cycle) >> 6;
+			currentpal[i].g = (pal6to8(vgapal[i*3+Green]) * cycle) >> 6;
+			currentpal[i].b = (pal6to8(vgapal[i*3+Blue ]) * cycle) >> 6;
 			};
 		waitsafe();
-		outportb(DacWrite,0);
-		for (i=0;i<256*3;i++) outportb(DacData,currentpal[i]);
+		SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, currentpal, 0, 256);
+		SDL_Flip(::screen);
+		usleep(750/64*1000);
 		};
 	};
 
 void gr_init (void) {
-	int ch;
+	int16_t ch;
 	struct REGPACK preg;
 //	Save old mode:
 	preg.r_ax=0x0f00;
@@ -371,34 +373,36 @@ void gr_exit (void) {
 
 //#if 0
 void dim (void) {
-	p_rec currentpal;
-	int temp,i,cycle;
+	SDL_Color currentpal[256];
+	int16_t temp,i,cycle;
 
 	for (cycle=63;cycle>=31;cycle-=6) {
-		for (i=0;i<256*3;i++) {
-			temp=vgapal[i];
-			temp=(temp*cycle)>>6;
-			currentpal[i]=temp;
+		for (i=0;i<256;i++){
+			currentpal[i].r = (pal6to8(vgapal[i*3+Red  ]) * cycle) >> 6;
+			currentpal[i].g = (pal6to8(vgapal[i*3+Green]) * cycle) >> 6;
+			currentpal[i].b = (pal6to8(vgapal[i*3+Blue ]) * cycle) >> 6;
 			};
 		waitsafe();
-		outportb(DacWrite,0);
-		for (i=0;i<256*3;i++) outportb(DacData,currentpal[i]);
+		SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, currentpal, 0, 256);
+		SDL_Flip(::screen);
+		usleep(750/64*1000);
 		};
 	};
 
 void undim (void) {
-	p_rec currentpal;
-	int temp,i,cycle;
+	SDL_Color currentpal[256];
+	int16_t temp,i,cycle;
 
 	for (cycle=32;cycle<64;cycle+=6) {
-		for (i=0;i<(256*3);i++) {
-			temp=vgapal[i];
-			temp=(temp*cycle)>>6;
-			currentpal[i]=temp;
+		for (i=0;i<256;i++){
+			currentpal[i].r = (pal6to8(vgapal[i*3+Red  ]) * cycle) >> 6;
+			currentpal[i].g = (pal6to8(vgapal[i*3+Green]) * cycle) >> 6;
+			currentpal[i].b = (pal6to8(vgapal[i*3+Blue ]) * cycle) >> 6;
 			};
 		waitsafe();
-		outportb(DacWrite,0);
-		for (i=0;i<(256*3);i++) outportb(DacData,currentpal[i]);
+		SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, currentpal, 0, 256);
+		SDL_Flip(::screen);
+		usleep(750/64*1000);
 		};
 	};
 //#endif

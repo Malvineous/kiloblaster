@@ -5,15 +5,15 @@
 // Written by Allen W. Pilgrim
 
 #include <stdlib.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\music.h"
-#include "\develop\kilo2\include\2blaster.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/music.h"
+#include "include/2blaster.h"
 
-int msg_player (int n, int msg, int z) {
-	int sh, t;
+int16_t msg_player (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh, t;
 	switch (msg) {
 		case msg_update: switch (objs[n].state) {
 			case st_begin:
@@ -155,7 +155,7 @@ int msg_player (int n, int msg, int z) {
 					snd_play (2,12); killobj (z); break;
 				case obj_bonus1:		// pulsating orb
 					if (inv_cnt(inv_bomb) < 5) {
-					switch (random(2)) {
+					switch (xr_random(2)) {
 						case 0:
 							add_inv(inv_bomb);
 							text ("You gained an EXTRA bomb!!!",0);
@@ -238,8 +238,8 @@ int msg_player (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_wing1 (int n, int msg, int z) {
-	int sh;
+int16_t msg_wing1 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -311,8 +311,8 @@ int msg_wing1 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_wing2 (int n, int msg, int z) {
-	int sh;
+int16_t msg_wing2 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -385,8 +385,8 @@ int msg_wing2 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_wing3 (int n, int msg, int z) {
-	int sh;
+int16_t msg_wing3 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;
@@ -456,8 +456,8 @@ int msg_wing3 (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_wing4 (int n, int msg, int z) {
-	int sh;
+int16_t msg_wing4 (int16_t n, int16_t msg, int16_t z) {
+	int16_t sh;
 	switch (msg) {
 		case msg_update:
 			objs[n].count = (objs[n].count + 1)&7;

@@ -5,17 +5,16 @@
 // Written by Allen W. Pilgrim
 
 #include <stdlib.h>
-#include <mem.h>
-#include "\develop\kilo2\include\gr.h"
-#include "\develop\kilo2\include\keyboard.h"
-#include "\develop\kilo2\include\windows.h"
-#include "\develop\kilo2\include\gamectrl.h"
-#include "\develop\kilo2\include\music.h"
-#include "\develop\kilo2\include\2blaster.h"
+#include "include/gr.h"
+#include "include/keyboard.h"
+#include "include/windows.h"
+#include "include/gamectrl.h"
+#include "include/music.h"
+#include "include/2blaster.h"
 
-extern int level_flg;
+extern int16_t level_flg;
 
-void addobj (int kind, int x, int y, int xd, int yd) {
+void addobj (int16_t kind, int16_t x, int16_t y, int16_t xd, int16_t yd) {
 	if ((num_objs + 1) >= (max_objs)) return;
 		objs [num_objs].kind   = kind;
 		objs [num_objs].x      = x;
@@ -29,22 +28,22 @@ void addobj (int kind, int x, int y, int xd, int yd) {
 		objs [num_objs].count2 = 0;
 		objs [num_objs].count3 = 0;
 		objs [num_objs].flags  = objinfo[kind].flags;
-		objs [num_objs].class  = objinfo[kind].class;
-		if (objs[num_objs].class == class_enemy) enemy_cnt++;
-		if (objs[num_objs].class == class_weapon1) fire_cnt++;
-		if (objs[num_objs].class == class_weapon2) weapon_cnt++;
+		objs [num_objs].class_  = objinfo[kind].class_;
+		if (objs[num_objs].class_ == class_enemy) enemy_cnt++;
+		if (objs[num_objs].class_ == class_weapon1) fire_cnt++;
+		if (objs[num_objs].class_ == class_weapon2) weapon_cnt++;
 		num_objs++;
 	};
 
-void add_inv (int inv_type) {
+void add_inv (int16_t inv_type) {
 	if (pl.num_inv >= 41) return;
 	statmodflg |= mod_screen;
 	pl.inv[pl.num_inv] = inv_type;
 	pl.num_inv++;
 	};
 
-int take_inv (int inv_type) {
-	int c, d;
+int16_t take_inv (int16_t inv_type) {
+	int16_t c, d;
 	for ( c = 0; c < pl.num_inv; c++) {
 		if (pl.inv[c] == inv_type) {
 			for (d = c + 1; d < pl.num_inv; d++) {
@@ -58,8 +57,8 @@ int take_inv (int inv_type) {
 	return (0);
 	};
 
-int inv_cnt (int inv_type) {
-	int c, d;
+int16_t inv_cnt (int16_t inv_type) {
+	int16_t c, d;
 	d = 0;
 	for (c = 0; c < pl.num_inv; c++) {
 		d += (pl.inv[c]==inv_type);
@@ -105,7 +104,7 @@ void cosmos (void) {
 	addobj (obj_stars, 175, 45, 0, 0);	addobj (obj_stars, 225, 120, 0, 0);
 	};
 
-void p_hit (int take) {
+void p_hit (int16_t take) {
 	statmodflg |= mod_screen;
 	pl.health -= take;
 	if (pl.health > 0) {
@@ -118,12 +117,12 @@ void p_hit (int take) {
 		};
 	};
 
-void killobj (int n) {
+void killobj (int16_t n) {
 	objs[n].kind = obj_killme;
 	};
 
-void refresh (int pagemode) {
-	int n, x, y;
+void refresh (int16_t pagemode) {
+	int16_t n, x, y;
 	if (pagemode) {
 		if (statmodflg) {
 			stat_win ();
@@ -161,7 +160,7 @@ void refresh (int pagemode) {
 };
 
 void upd_objs (void) {
-	int cnt1, cnt2, x, y, startx, starty, endx, endy;
+	int16_t cnt1, cnt2, x, y, startx, starty, endx, endy;
 	for (cnt1 = 0; cnt1 < num_objs; cnt1++) {
 		startx = objs[cnt1].x>>4;
 		starty = objs[cnt1].y>>4;
@@ -196,7 +195,7 @@ void upd_objs (void) {
 	};
 
 void purgeobjs (void) {
-	int c, d;		// Purge objects of type obj_killme
+	int16_t c, d;		// Purge objects of type obj_killme
 	d = 0;
 	for (c = 0; c < num_objs; c++) {
 		if (objs[c].kind != obj_killme) {
@@ -207,7 +206,7 @@ void purgeobjs (void) {
 		}; num_objs = d;
 	};
 
-void move_obj (int n, int new_x, int new_y) {
+void move_obj (int16_t n, int16_t new_x, int16_t new_y) {
 	if (new_y < 0) new_y = 0;
 	else if (new_y > (scrn_y - objs[n].yl))
 		new_y = scrn_y - objs[n].yl;
@@ -218,37 +217,37 @@ void move_obj (int n, int new_x, int new_y) {
 	objs[n].y = new_y;
 	};
 
-void seekplayer (int n, int *dx, int *dy) {
+void seekplayer (int16_t n, int16_t *dx, int16_t *dy) {
 	*dx = (objs[0].x > objs[n].x) - (objs[0].x < objs[n].x);
 	*dy = (objs[0].y > objs[n].y) - (objs[0].y < objs[n].y);
 	};
 
-void attract (int n, int *ax, int *ay) {		// attraction point
+void attract (int16_t n, int16_t *ax, int16_t *ay) {		// attraction point
 	*ax = (x_pnt > objs[n].x) - (x_pnt < objs[n].x);
 	*ay = (y_pnt > objs[n].y) - (y_pnt < objs[n].y);
 	};
 
-void attract2 (int n, int *ax, int *ay) {		// attraction point
+void attract2 (int16_t n, int16_t *ax, int16_t *ay) {		// attraction point
 	*ax = (x_pnt2 > objs[n].x) - (x_pnt2 < objs[n].x);
 	*ay = (y_pnt2 > objs[n].y) - (y_pnt2 < objs[n].y);
 	};
 
-void attract3 (int n, int *ax, int *ay) {		// attraction point
+void attract3 (int16_t n, int16_t *ax, int16_t *ay) {		// attraction point
 	*ax = (x_pnt3 > objs[n].x) - (x_pnt3 < objs[n].x);
 	*ay = (y_pnt3 > objs[n].y) - (y_pnt3 < objs[n].y);
 	};
 
-int class_cnt (int c) {
-	int n;
-	int count = 0;
+int16_t class_cnt (int16_t c) {
+	int16_t n;
+	int16_t count = 0;
 	for (n = 0; n < num_objs; n++) {
-		if (objinfo[objs[n].kind].class==c) count++;
+		if (objinfo[objs[n].kind].class_==c) count++;
 		};
 	return (count);
 	};
 
 void upd_end (void) {
-	if (random(5)==0) addobj (obj_jump2, rand()%236, rand()%172, 0, 0);
-	if (random(10)==0) addobj (obj_explode6, rand()%240, rand()%176, 0, 0);
-	if (random(15)==0) explosion (rand()%240, rand()%176, 5);
+	if (xr_random(5)==0) addobj (obj_jump2, rand()%236, rand()%172, 0, 0);
+	if (xr_random(10)==0) addobj (obj_explode6, rand()%240, rand()%176, 0, 0);
+	if (xr_random(15)==0) explosion (rand()%240, rand()%176, 5);
 	};

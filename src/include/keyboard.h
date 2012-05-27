@@ -4,14 +4,14 @@ extern char k_rshift, k_lshift, k_shift, k_ctrl, k_alt, k_numlock;
 extern unsigned char keydown[2][256];
 
 void k_status (void);
-int k_pressed (void);
-int k_read (void);
+int16_t k_pressed (void);
+int16_t k_read (void);
 
 void installhandler (unsigned char status);
 void removehandler(void);
 void enablebios(void);
 void disablebios(void);
-int biosstatus (void);
+int16_t biosstatus (void);
 
 //	Characters
 #define enter 13
@@ -42,7 +42,7 @@ int biosstatus (void);
 #define scan_rshift 0x36
 #define scan_alt 0x38
 #define scan_space 0x39
-#define scan_f1= 0x3B
+#define scan_f1 0x3B
 #define scan_cursorup 0x48
 #define scan_cursorleft 0x4B
 #define scan_cursorright 0x4D

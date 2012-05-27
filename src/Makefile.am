@@ -7,14 +7,10 @@ CORE_FILES += 2b_info.cpp
 CORE_FILES += 2b_objmn.cpp
 CORE_FILES += 2b_objs.cpp
 CORE_FILES += 2b_playr.cpp
-CORE_FILES += 2b_vol1.cpp
-CORE_FILES += 2b_vol2.cpp
-CORE_FILES += 2b_vol3.cpp
 CORE_FILES += 2blaster.cpp
 CORE_FILES += config.cpp
 CORE_FILES += gamectrl.cpp
 CORE_FILES += graphics.cpp
-CORE_FILES += keyboard.cpp
 CORE_FILES += music.cpp
 CORE_FILES += shapeman.cpp
 CORE_FILES += windows.cpp
@@ -46,4 +42,3 @@ EXTRA_kfile3_SOURCES = $(EXTRA_CORE_FILES)
 
 AM_CPPFLAGS = $(sdl_CFLAGS) -Wno-write-strings -fpermissive $(libgamemusic_CFLAGS)
 AM_LDFLAGS = $(sdl_LIBS) $(libgamemusic_LIBS)
-
